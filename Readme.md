@@ -1,7 +1,8 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Sergey Ukhanov](https://up.htmlacademy.ru/ecmascript/10/user/1183933).
-* Наставник: `Неизвестно`.
+* Наставник: [Pavel Skripkin](https://htmlacademy.ru/profile/id604273).
+
 
 ---
 
