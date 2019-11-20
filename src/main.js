@@ -427,27 +427,21 @@ const render = (container, template, position = `beforeend`) => {
   container.insertAdjacentHTML(position, template);
 };
 
-const controls = document.querySelector(`.trip-controls`);
+const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);
-
 render(trip, createRouteTemplate(), `afterbegin`);
-render(controls, createMenuTemplate());
-render(controls, createFiltersTemplate());
+render(menuTitle, createMenuTemplate(), `afterend`);
+render(filterTitle, createFiltersTemplate(), `afterend`);
 
 const trips = document.querySelector(`.trip-events`);
-
 render(trips, createSortingTemplate());
-
 render(trips, createEventAddTemplate());
-
 render(trips, createTripDaysTemplate());
 
 const days = document.querySelector(`.trip-days`);
-
 render(days, createDayTemplate());
 
 const dayEvents = document.querySelector(`.trip-events__list`);
-
 render(dayEvents, createEventEditTemplate());
 
 new Array(COUNT).fill(``).forEach(
