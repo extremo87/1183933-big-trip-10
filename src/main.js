@@ -8,7 +8,8 @@ import {createEventAddTemplate} from './components/addEvent';
 import {createEventTemplate} from './components/event';
 import {createSortingTemplate} from './components/sorting';
 import {COUNT} from './config';
-import {generatePoints, getCities} from './mocks/point';
+import {generatePoints} from './mocks/point';
+import {getCities} from './mocks/city';
 
 const render = (container, template, position = `beforeend`) => {
   container.insertAdjacentHTML(position, template);
