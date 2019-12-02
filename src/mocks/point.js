@@ -4,6 +4,7 @@ import moment from 'moment';
 import {Options} from './data/options';
 import {Types} from './data/types';
 import {Activities} from './data/activities';
+import {getCities} from '../mocks/city';
 
 const getRandomType = (types) => {
   return types[Math.floor(Math.random() * types.length)];
@@ -15,6 +16,25 @@ const getRandomOptions = (type, options) => {
   return randomOptions;
 };
 
+export const getTotalPrice = (days) => {
+  let sum = 0;
+
+  for (const day of days) {
+    for (const event of day.points) {
+      sum += event.price;
+      sum += event.options.reduce(
+          (accumulator, currentValue) => accumulator + currentValue.price,
+          0
+      );
+    }
+  }
+  return sum;
+};
+
+const getRandomCity = (cities) => {
+  return cities[Math.floor(Math.random() * cities.length)];
+};
+
 export const generatePoint = () => {
   const randomType = getRandomType(Types);
   const randomOptions = getRandomOptions(randomType, Options);
@@ -24,9 +44,11 @@ export const generatePoint = () => {
   const timeDifference = finishTimeRandom.clone().diff(startTimeRandom);
   const eventDuration = moment.utc(moment.duration(timeDifference).asMilliseconds());
   const formattedDuration = `${eventDuration.format(`h`)}H ${eventDuration.format(`mm`)}M`;
+  const currentCity = getRandomCity(getCities());
 
   return {
     name: Activities.get(randomType.name),
+    city: currentCity,
     type: randomType,
     options: randomOptions,
     startTime: startTimeRandom,
@@ -34,7 +56,8 @@ export const generatePoint = () => {
     duration: formattedDuration,
     price: randomPrice,
     currency: CURRENCY,
-    important: false,
+    favorite: false,
+
   };
 };
 

@@ -1,43 +1,53 @@
 export const Types = [
   {
     name: `taxi`,
-    img: `taxi.png`
+    img: `taxi.png`,
+    type: `transfer`
   },
   {
     name: `bus`,
-    img: `bus.png`
+    img: `bus.png`,
+    type: `transfer`
   },
   {
     name: `train`,
-    img: `train.png`
+    img: `train.png`,
+    type: `transfer`
   },
   {
     name: `ship`,
-    img: `ship.png`
+    img: `ship.png`,
+    type: `transfer`
   },
   {
     name: `transport`,
-    img: `transport.png`
+    img: `transport.png`,
+    type: `transfer`
   },
 
   {
     name: `drive`,
-    img: `drive.png`
+    img: `drive.png`,
+    type: `transfer`
   },
   {
     name: `flight`,
-    img: `flight.png`
+    img: `flight.png`,
+    type: `transfer`
   },
   {
     name: `check-in`,
-    img: `check-in.png`
+    img: `check-in.png`,
+    type: `activity`
   },
   {
     name: `sightseeing`,
-    img: `sightseeing.png`
+    img: `sightseeing.png`,
+    type: `activity`
   },
   {
     name: `restaurant`,
-    img: `restaurant.png`
+    img: `restaurant.png`,
+    type: `activity`
   }
 ];

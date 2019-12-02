@@ -5,7 +5,7 @@ export const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${event.type.img}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${event.name}</h3>
+        <h3 class="event__title">${event.name } at ${event.city.name}</h3>
     
         <div class="event__schedule">
           <p class="event__time">
@@ -25,7 +25,7 @@ export const createEventTemplate = (event) => {
           <li class="event__offer">
             <span class="event__offer-title">${event.options[0].name}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">20</span>
+            ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${event.options[0].price}</span>
            </li>
         </ul>
     

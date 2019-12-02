@@ -7,7 +7,7 @@ export const createDayTemplate = (day) => {
           <time class="day__date" datetime="2019-03-18">${day.date.format(`MMM YY`)}</time>
       </div>
       <ul class="trip-events__list">
-          ${day.points.map((point) => createEventTemplate(point))}
+          ${day.points.map((point) => createEventTemplate(point)).join(`\n`)}
       </ul>
       </li>`);
 };
