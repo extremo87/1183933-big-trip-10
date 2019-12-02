@@ -30,7 +30,7 @@ export const Types = [
   },
   {
     name: `check-in`,
-    img: `check.png`
+    img: `check-in.png`
   },
   {
     name: `sightseeing`,

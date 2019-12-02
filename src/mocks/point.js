@@ -3,6 +3,7 @@ import {CURRENCY} from '../config';
 import moment from 'moment';
 import {Options} from './data/options';
 import {Types} from './data/types';
+import {Activities} from './data/activities';
 
 const getRandomType = (types) => {
   return types[Math.floor(Math.random() * types.length)];
@@ -25,6 +26,7 @@ export const generatePoint = () => {
   const formattedDuration = `${eventDuration.format(`h`)}H ${eventDuration.format(`mm`)}M`;
 
   return {
+    name: Activities.get(randomType.name),
     type: randomType,
     options: randomOptions,
     startTime: startTimeRandom,

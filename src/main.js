@@ -23,21 +23,20 @@ render(filterTitle, createFiltersTemplate(), `afterend`);
 
 const trips = document.querySelector(`.trip-events`);
 render(trips, createSortingTemplate());
-render(trips, createEventAddTemplate());
 render(trips, createTripDaysTemplate());
 
+const points = generatePoints(10);
+const daysEvents = generateDays(points);
 const days = document.querySelector(`.trip-days`);
-render(days, createDayTemplate());
+
+console.log(daysEvents);
+
+daysEvents.map((item) => render(days, createDayTemplate(item)));
 
 const dayEvents = document.querySelector(`.trip-events__list`);
 render(dayEvents, createEventEditTemplate());
 
-new Array(COUNT).fill(``).forEach(
-    () => render(dayEvents, createEventTemplate())
-);
+// new Array(COUNT).fill(``).forEach(
+//     () => render(dayEvents, createEventTemplate())
+// );
 
-const points = generatePoints(10);
-const daysEvents = generateDays(points);
-
-
-console.log(daysEvents);
