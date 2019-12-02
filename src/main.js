@@ -8,7 +8,7 @@ import {createEventAddTemplate} from './components/addEvent';
 import {createEventTemplate} from './components/event';
 import {createSortingTemplate} from './components/sorting';
 import {COUNT} from './config';
-import {generatePoints} from './mocks/point';
+import {generatePoints, generateDays} from './mocks/point';
 import {getCities} from './mocks/city';
 
 const render = (container, template, position = `beforeend`) => {
@@ -36,4 +36,8 @@ new Array(COUNT).fill(``).forEach(
     () => render(dayEvents, createEventTemplate())
 );
 
-console.log(generatePoints(100), getCities());
+const points = generatePoints(10);
+const daysEvents = generateDays(points);
+
+
+console.log(daysEvents);

@@ -4,71 +4,6 @@ import moment from 'moment';
 import {Options} from './data/options';
 import {Types} from './data/types';
 
-const DEFAULT_TEXT = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
- Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis 
- at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex,
- convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, 
- condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam 
- faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue 
- convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. 
- In rutrum ac purus sit amet tempus.`;
-
-const getRandomDescriprion = (someText) => {
-  const sentences = someText.split(`.`);
-  const finalString = [];
-  const count = getRandomInt(1, 3);
-  for (let i = 0; i <= count; i++) {
-    finalString.push(sentences[getRandomInt(0, sentences.length)]);
-  }
-  return finalString.join(`.`);
-};
-
-const generateImages = (count) => {
-  return new Array(count)
-    .fill(``)
-    .map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
-};
-
-export const getCities = () => {
-  return [
-    {
-      name: `Bangkok`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `Kuala-Lumpur`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `Tokio`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `Seul`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `Denpasar`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `Moscow`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    },
-    {
-      name: `London`,
-      description: getRandomDescriprion(DEFAULT_TEXT),
-      images: generateImages(5)
-    }
-  ];
-};
-
 const getRandomType = (types) => {
   return types[Math.floor(Math.random() * types.length)];
 };
@@ -106,3 +41,36 @@ export const generatePoints = (count) => {
     .fill(``)
     .map(generatePoint);
 };
+
+export const generateDays = (points) => {
+  points.sort((a, b) => {
+    if (a.startTime > b.startTime) {
+      return 1;
+    }
+    if (a.startTime < b.startTime) {
+      return -1;
+    }
+    return 0;
+  });
+
+  const repeatingDays = [];
+
+  const allPointTimes = points.filter((item) => {
+    if (!repeatingDays.includes(item.startTime.format(`L`))) {
+      repeatingDays.push(item.startTime.format(`L`));
+      return true;
+    }
+    return false;
+  }).map((item) => item.startTime);
+
+  const days = [];
+
+  for (const dateTime of allPointTimes) {
+    days.push({
+      date: dateTime,
+      points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
+    });
+  }
+  return days;
+};
+
