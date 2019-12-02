@@ -4,32 +4,34 @@ import {createFiltersTemplate} from './components/filters';
 import {createDayTemplate} from './components/day';
 import {createTripDaysTemplate} from './components/tripDays';
 import {createEventEditTemplate} from './components/editEvent';
-import {createEventAddTemplate} from './components/addEvent';
-import {createEventTemplate} from './components/event';
 import {createSortingTemplate} from './components/sorting';
-import {COUNT} from './config';
+import {createTotalTemplate} from './components/total';
+import {generatePoints, generateDays, getTotalPrice} from './mocks/point';
+
 
 const render = (container, template, position = `beforeend`) => {
   container.insertAdjacentHTML(position, template);
 };
 
+const points = generatePoints(10);
+const daysEvents = generateDays(points);
+const total = getTotalPrice(daysEvents);
+
 const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);
-render(trip, createRouteTemplate(), `afterbegin`);
+render(trip, createRouteTemplate(daysEvents), `afterbegin`);
+render(trip, createTotalTemplate(total));
 render(menuTitle, createMenuTemplate(), `afterend`);
 render(filterTitle, createFiltersTemplate(), `afterend`);
 
 const trips = document.querySelector(`.trip-events`);
 render(trips, createSortingTemplate());
-render(trips, createEventAddTemplate());
 render(trips, createTripDaysTemplate());
 
+
 const days = document.querySelector(`.trip-days`);
-render(days, createDayTemplate());
+
+daysEvents.map((item) => render(days, createDayTemplate(item)));
 
 const dayEvents = document.querySelector(`.trip-events__list`);
-render(dayEvents, createEventEditTemplate());
-
-new Array(COUNT).fill(``).forEach(
-    () => render(dayEvents, createEventTemplate())
-);
+render(dayEvents, createEventEditTemplate(daysEvents[0].points[0]));
