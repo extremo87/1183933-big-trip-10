@@ -8,6 +8,8 @@ import TripRoute from './components/tripRoute';
 import Sorting from './components/sorting';
 import TripDays from './components/tripDays';
 import Day from './components/day';
+import Event from './components/event';
+import Form from './components/editEvent';
 
 
 const render = (container, template, position = `beforeend`) => {
@@ -30,7 +32,32 @@ domRender(trips, new Sorting().getElement(), RenderPosition.BEFOREEND);
 domRender(trips, new TripDays().getElement(), RenderPosition.BEFOREEND);
 
 const days = document.querySelector(`.trip-days`);
-daysEvents.map((item) => domRender(days, new Day(item).getElement(), RenderPosition.BEFOREEND));
+
+const daysDOMElements = [];
+
+daysEvents.map((item) => {
+  const dayDOM = new Day(item);
+  daysDOMElements.push(dayDOM);
+  domRender(days, dayDOM.getElement(), RenderPosition.BEFOREEND);
+});
+
+const renderEvent = (event, position) => {
+  const eventCard = new Event(event);
+
+  const showButton = eventCard.getElement().querySelector(`.event__rollup-btn`);
+
+  showButton.addEventListener(`click`, () => {
+    console.log(event);
+  });
+
+  domRender(position, eventCard.getElement(), RenderPosition.BEFOREEND);
+};
+
+daysDOMElements.map((element) => {
+  const dayList = element.getElement().querySelector(`.trip-events__list`);
+  element.points.map((point) => renderEvent(point, dayList));
+});
 
 const dayEvents = document.querySelector(`.trip-events__list`);
-render(dayEvents, createEventEditTemplate(daysEvents[0].points[0]));
+
+domRender(dayEvents, new Form(daysEvents[0].points[0]).getElement(), RenderPosition.BEFOREEND);
