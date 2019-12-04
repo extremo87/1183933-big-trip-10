@@ -42,17 +42,29 @@ const renderEvent = (event, position) => {
   const showButton = eventCard.getElement().querySelector(`.event__rollup-btn`);
   const collapseButton = eventForm.getElement().querySelector(`.event__rollup-btn`);
   const saveButton = eventForm.getElement().querySelector(`.event__save-btn`);
+  const replaceWith = (component, newComponent) => {
+    component.getElement().replaceWith(newComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      replaceWith(eventForm, eventCard);
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
 
   showButton.addEventListener(`click`, () => {
-    eventCard.getElement().replaceWith(eventForm.getElement());
+    replaceWith(eventCard, eventForm);
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   collapseButton.addEventListener(`click`, () => {
-    eventForm.getElement().replaceWith(eventCard.getElement());
+    replaceWith(eventForm, eventCard);
   });
 
   saveButton.addEventListener(`click`, () => {
-    eventForm.getElement().replaceWith(eventCard.getElement());
+    replaceWith(eventForm, eventCard);
   });
 
   render(position, eventCard.getElement(), RenderPosition.BEFOREEND);
