@@ -1,5 +1,7 @@
 import {CURRENCY_SIGN} from '../config';
 import Component from './component';
+import Form from './editEvent';
+import {render, RenderPosition} from '../utils';
 
 export default class Event extends Component {
 
@@ -7,6 +9,41 @@ export default class Event extends Component {
     super();
     this._event = event;
   }
+
+  static renderEvent(event, position) {
+    const eventCard = new this(event);
+    const eventForm = new Form(event);
+    const showButton = eventCard.getElement().querySelector(`.event__rollup-btn`);
+    const collapseButton = eventForm.getElement().querySelector(`.event__rollup-btn`);
+    const saveButton = eventForm.getElement().querySelector(`.event__save-btn`);
+    const replaceWith = (component, newComponent) => {
+      component.getElement().replaceWith(newComponent.getElement());
+    };
+
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+      if (isEscKey) {
+        replaceWith(eventForm, eventCard);
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+
+    showButton.addEventListener(`click`, () => {
+      replaceWith(eventCard, eventForm);
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
+
+    collapseButton.addEventListener(`click`, () => {
+      replaceWith(eventForm, eventCard);
+    });
+
+    saveButton.addEventListener(`click`, () => {
+      replaceWith(eventForm, eventCard);
+    });
+
+    render(position, eventCard.getElement(), RenderPosition.BEFOREEND);
+  }
+
 
   getTemplate() {
     const {name, city, startTime, finishTime, duration, price, options, type} = this._event;
