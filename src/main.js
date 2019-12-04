@@ -1,37 +1,54 @@
-import {createRouteTemplate} from './components/tripRoute';
-import {createMenuTemplate} from './components/menu';
-import {createFiltersTemplate} from './components/filters';
-import {createDayTemplate} from './components/day';
-import {createTripDaysTemplate} from './components/tripDays';
-import {createEventEditTemplate} from './components/editEvent';
-import {createSortingTemplate} from './components/sorting';
-import {createTotalTemplate} from './components/total';
 import {generatePoints, generateDays, getTotalPrice} from './mocks/point';
+import {render, RenderPosition} from './utils';
+import Filters from './components/filters';
+import Menu from './components/menu';
+import Total from './components/total';
+import TripRoute from './components/tripRoute';
+import Sorting from './components/sorting';
+import TripDays from './components/tripDays';
+import Day from './components/day';
+import Event from './components/event';
+import NoPoints from './components/noPoints';
 
 
-const render = (container, template, position = `beforeend`) => {
-  container.insertAdjacentHTML(position, template);
-};
-
-const points = generatePoints(10);
-const daysEvents = generateDays(points);
-const total = getTotalPrice(daysEvents);
+const points = generatePoints(20);
 
 const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);
-render(trip, createRouteTemplate(daysEvents), `afterbegin`);
-render(trip, createTotalTemplate(total));
-render(menuTitle, createMenuTemplate(), `afterend`);
-render(filterTitle, createFiltersTemplate(), `afterend`);
-
 const trips = document.querySelector(`.trip-events`);
-render(trips, createSortingTemplate());
-render(trips, createTripDaysTemplate());
+render(menuTitle, new Menu().getElement(), RenderPosition.AFTERNODE);
+render(filterTitle, new Filters().getElement(), RenderPosition.AFTERNODE);
+
+if (points.length === 0) {
+
+  render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
+  render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
+
+} else {
+
+  const daysEvents = generateDays(points);
+  const total = getTotalPrice(daysEvents);
+
+  render(trip, new TripRoute(daysEvents).getElement(), RenderPosition.BEFOREEND);
+  render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
+
+  render(trips, new Sorting().getElement(), RenderPosition.BEFOREEND);
+  render(trips, new TripDays().getElement(), RenderPosition.BEFOREEND);
+
+  const days = document.querySelector(`.trip-days`);
+
+  const daysElements = [];
+
+  daysEvents.map((item) => {
+    const dayDOM = new Day(item);
+    daysElements.push(dayDOM);
+    render(days, dayDOM.getElement(), RenderPosition.BEFOREEND);
+  });
+
+  daysElements.map((element) => {
+    const dayList = element.getElement().querySelector(`.trip-events__list`);
+    element.points.map((point) => Event.renderEvent(point, dayList));
+  });
+}
 
 
-const days = document.querySelector(`.trip-days`);
-
-daysEvents.map((item) => render(days, createDayTemplate(item)));
-
-const dayEvents = document.querySelector(`.trip-events__list`);
-render(dayEvents, createEventEditTemplate(daysEvents[0].points[0]));
