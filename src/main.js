@@ -1,12 +1,13 @@
-import {createRouteTemplate} from './components/tripRoute';
-import {createMenuTemplate} from './components/menu';
-import {createFiltersTemplate} from './components/filters';
-import {createDayTemplate} from './components/day';
-import {createTripDaysTemplate} from './components/tripDays';
 import {createEventEditTemplate} from './components/editEvent';
-import {createSortingTemplate} from './components/sorting';
-import {createTotalTemplate} from './components/total';
 import {generatePoints, generateDays, getTotalPrice} from './mocks/point';
+import {render as domRender, RenderPosition} from './utils';
+import Filters from './components/filters';
+import Menu from './components/menu';
+import Total from './components/total';
+import TripRoute from './components/tripRoute';
+import Sorting from './components/sorting';
+import TripDays from './components/tripDays';
+import Day from './components/day';
 
 
 const render = (container, template, position = `beforeend`) => {
@@ -19,19 +20,17 @@ const total = getTotalPrice(daysEvents);
 
 const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);
-render(trip, createRouteTemplate(daysEvents), `afterbegin`);
-render(trip, createTotalTemplate(total));
-render(menuTitle, createMenuTemplate(), `afterend`);
-render(filterTitle, createFiltersTemplate(), `afterend`);
+domRender(trip, new TripRoute(daysEvents).getElement(), RenderPosition.BEFOREEND);
+domRender(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
+domRender(menuTitle, new Menu().getElement(), RenderPosition.AFTERNODE);
+domRender(filterTitle, new Filters().getElement(), RenderPosition.AFTERNODE);
 
 const trips = document.querySelector(`.trip-events`);
-render(trips, createSortingTemplate());
-render(trips, createTripDaysTemplate());
-
+domRender(trips, new Sorting().getElement(), RenderPosition.BEFOREEND);
+domRender(trips, new TripDays().getElement(), RenderPosition.BEFOREEND);
 
 const days = document.querySelector(`.trip-days`);
-
-daysEvents.map((item) => render(days, createDayTemplate(item)));
+daysEvents.map((item) => domRender(days, new Day(item).getElement(), RenderPosition.BEFOREEND));
 
 const dayEvents = document.querySelector(`.trip-events__list`);
 render(dayEvents, createEventEditTemplate(daysEvents[0].points[0]));
