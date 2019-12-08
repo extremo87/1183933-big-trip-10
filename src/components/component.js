@@ -2,10 +2,14 @@ import {createElement} from '../utils';
 
 export default class Component {
   constructor() {
-    this._element = null;
+    if (new.target === Component) {
+      throw new Error(`Can't instantiate Component, only concrete one.`);
+    }
   }
 
-  getTemplate() {}
+  getTemplate() {
+    throw new Error(`Abstract method not implemented: getTemplate`);
+  }
 
   getElement() {
     if (!this._element) {
@@ -13,6 +17,10 @@ export default class Component {
     }
 
     return this._element;
+  }
+
+  setClickHandler(element, handler) {
+    this.getElement().querySelector(element).addEventListener(`click`, handler);
   }
 
   removeElement() {

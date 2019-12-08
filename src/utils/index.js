@@ -52,3 +52,7 @@ export const render = (container, element, place) => {
       break;
   }
 };
+
+export const replaceWith = (component, newComponent) => {
+  component.getElement().replaceWith(newComponent.getElement());
+};
