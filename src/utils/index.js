@@ -56,3 +56,35 @@ export const render = (container, element, place) => {
 export const replaceWith = (component, newComponent) => {
   component.getElement().replaceWith(newComponent.getElement());
 };
+
+export const generateDays = (points) => {
+  points.sort((a, b) => {
+    if (a.startTime > b.startTime) {
+      return 1;
+    }
+    if (a.startTime < b.startTime) {
+      return -1;
+    }
+    return 0;
+  });
+
+  const repeatingDays = [];
+
+  const allPointTimes = points.filter((item) => {
+    if (!repeatingDays.includes(item.startTime.format(`L`))) {
+      repeatingDays.push(item.startTime.format(`L`));
+      return true;
+    }
+    return false;
+  }).map((item) => item.startTime);
+
+  const days = [];
+
+  for (const dateTime of allPointTimes) {
+    days.push({
+      date: dateTime,
+      points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
+    });
+  }
+  return days;
+};

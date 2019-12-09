@@ -1,4 +1,4 @@
-import {generatePoints, generateDays, getTotalPrice} from './mocks/point';
+import {generatePoints, getTotalPrice} from './mocks/point';
 import {render, RenderPosition} from './utils';
 import Filters from './components/filters';
 import Menu from './components/menu';
@@ -22,16 +22,14 @@ if (points.length === 0) {
   render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
 
 } else {
+  const total = getTotalPrice(points);
 
-  const daysEvents = generateDays(points);
-  const total = getTotalPrice(daysEvents);
-
-  render(trip, new TripRoute(daysEvents).getElement(), RenderPosition.BEFOREEND);
+  render(trip, new TripRoute(points).getElement(), RenderPosition.BEFOREEND);
   render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
 
   const controller = new TripController(trips);
 
-  controller.renderLayout(daysEvents);
+  controller.renderLayout(points);
 }
 
 

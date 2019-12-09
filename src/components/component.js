@@ -26,4 +26,8 @@ export default class Component {
   removeElement() {
     this._element.remove();
   }
+
+  clearElement() {
+    this.getElement().innerHTML = ``;
+  }
 }

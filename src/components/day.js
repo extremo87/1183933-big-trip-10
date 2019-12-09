@@ -2,7 +2,7 @@ import Component from './component';
 
 export default class Day extends Component {
 
-  constructor(day) {
+  constructor(day = null) {
     super();
     this._day = day;
   }
@@ -12,8 +12,11 @@ export default class Day extends Component {
   }
 
   getTemplate() {
-    const {date} = this._day;
+    return (this._day === null) ? this.renderEmptyDay() : this.renderDay();
+  }
 
+  renderDay() {
+    const {date} = this._day;
     return (`<li class="trip-days__item  day">
       <div class="day__info">
           <span class="day__counter">${date.format(`D`)}</span>
@@ -23,4 +26,21 @@ export default class Day extends Component {
       </ul>
       </li>`);
   }
+
+
+  renderEmptyDay() {
+
+    return (`<li class="trip-days__item  day">
+      <div class="day__info"></div>
+      <ul class="trip-events__list">
+      </ul>
+      </li>`);
+  }
+
+  getEventsContainer() {
+    return this.getElement().querySelector(`.trip-events__list`);
+  }
+
+
 }
+
