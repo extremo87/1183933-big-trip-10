@@ -20,6 +20,14 @@ export default class Form extends Component {
     `);
   }
 
+  setSubmitHandler(handler) {
+    this.setClickHandler(`.event__save-btn`, handler);
+  }
+
+  setCollapseHandler(handler) {
+    this.setClickHandler(`.event__rollup-btn`, handler);
+  }
+
   renderOption(option, currentEvent) {
 
     const availableOptions = currentEvent.options.map((item) => item.name);

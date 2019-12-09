@@ -1,7 +1,7 @@
 import {CURRENCY_SIGN} from '../config';
 import Component from './component';
 import Form from './editEvent';
-import {render, RenderPosition} from '../utils';
+import {render, RenderPosition, replaceWith} from '../utils';
 
 export default class Event extends Component {
 
@@ -10,15 +10,14 @@ export default class Event extends Component {
     this._event = event;
   }
 
+  setShowButtonHandler(handler) {
+    this.setClickHandler(`.event__rollup-btn`, handler);
+  }
+
   static renderEvent(event, position) {
     const eventCard = new this(event);
     const eventForm = new Form(event);
-    const showButton = eventCard.getElement().querySelector(`.event__rollup-btn`);
-    const collapseButton = eventForm.getElement().querySelector(`.event__rollup-btn`);
-    const saveButton = eventForm.getElement().querySelector(`.event__save-btn`);
-    const replaceWith = (component, newComponent) => {
-      component.getElement().replaceWith(newComponent.getElement());
-    };
+
 
     const onEscKeyDown = (evt) => {
       const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
@@ -28,16 +27,16 @@ export default class Event extends Component {
       }
     };
 
-    showButton.addEventListener(`click`, () => {
+    eventCard.setShowButtonHandler(() => {
       replaceWith(eventCard, eventForm);
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
-    collapseButton.addEventListener(`click`, () => {
+    eventForm.setSubmitHandler(() => {
       replaceWith(eventForm, eventCard);
     });
 
-    saveButton.addEventListener(`click`, () => {
+    eventForm.setCollapseHandler(() => {
       replaceWith(eventForm, eventCard);
     });
 
@@ -83,5 +82,7 @@ export default class Event extends Component {
     </div>
   </li>`);
   }
+
+
 }
 
