@@ -16,17 +16,14 @@ const getRandomOptions = (type, options) => {
   return randomOptions;
 };
 
-export const getTotalPrice = (days) => {
+export const getTotalPrice = (points) => {
   let sum = 0;
-
-  for (const day of days) {
-    for (const event of day.points) {
-      sum += event.price;
-      sum += event.options.reduce(
-          (accumulator, currentValue) => accumulator + currentValue.price,
-          0
-      );
-    }
+  for (const event of points) {
+    sum += event.price;
+    sum += event.options.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.price,
+        0
+    );
   }
   return sum;
 };
@@ -54,6 +51,7 @@ export const generatePoint = () => {
     startTime: startTimeRandom,
     finishTime: finishTimeRandom,
     duration: formattedDuration,
+    durationInMs: eventDuration,
     price: randomPrice,
     currency: CURRENCY,
     favorite: false,
@@ -65,37 +63,5 @@ export const generatePoints = (count) => {
   return new Array(count)
     .fill(``)
     .map(generatePoint);
-};
-
-export const generateDays = (points) => {
-  points.sort((a, b) => {
-    if (a.startTime > b.startTime) {
-      return 1;
-    }
-    if (a.startTime < b.startTime) {
-      return -1;
-    }
-    return 0;
-  });
-
-  const repeatingDays = [];
-
-  const allPointTimes = points.filter((item) => {
-    if (!repeatingDays.includes(item.startTime.format(`L`))) {
-      repeatingDays.push(item.startTime.format(`L`));
-      return true;
-    }
-    return false;
-  }).map((item) => item.startTime);
-
-  const days = [];
-
-  for (const dateTime of allPointTimes) {
-    days.push({
-      date: dateTime,
-      points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
-    });
-  }
-  return days;
 };
 

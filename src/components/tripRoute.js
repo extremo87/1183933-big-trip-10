@@ -2,18 +2,26 @@ import Component from './component';
 
 export default class TripRoute extends Component {
 
-  constructor(days) {
+  constructor(points) {
     super();
-    this._days = days;
+    this._points = points.sort((a, b) => {
+      if (a.startTime > b.startTime) {
+        return 1;
+      }
+      if (a.startTime < b.startTime) {
+        return -1;
+      }
+      return 0;
+    });
   }
 
   getTemplate() {
-    const startPoint = this._days[0].points[0].city.name;
-    const finalPoint = this._days[this._days.length - 1].points[this._days[this._days.length - 1].points.length - 1].city.name;
+    const startPoint = this._points[0];
+    const finalPoint = this._points[this._points.length - 1];
     // TODO : redner dashes depending om point quantity
     return (`<div class="trip-info__main">
-        <h1 class="trip-info__title">${startPoint} &mdash; ... &mdash; ${finalPoint}</h1>
-        <p class="trip-info__dates">${this._days[0].date.format(`D MMM`)}&nbsp;&mdash;&nbsp; ${this._days[this._days.length - 1].date.format(`D MMM`)}</p>
+        <h1 class="trip-info__title">${startPoint.city.name} &mdash; ... &mdash; ${finalPoint.city.name}</h1>
+        <p class="trip-info__dates">${startPoint.startTime.format(`D MMM`)}&nbsp;&mdash;&nbsp; ${finalPoint.finishTime.format(`D MMM`)}</p>
       </div>`);
   }
 }
