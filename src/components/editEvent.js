@@ -2,9 +2,9 @@ import {getCities} from '../mocks/city';
 import {Types} from '../mocks/data/types';
 import {CURRENCY_SIGN} from '../config';
 import {Options} from '../mocks/data/options';
-import Component from './component';
+import SmartComponent from './smartComponent';
 
-export default class Form extends Component {
+export default class Form extends SmartComponent {
 
   constructor(event) {
     super();
@@ -27,6 +27,11 @@ export default class Form extends Component {
   setCollapseHandler(handler) {
     this.setClickHandler(`.event__rollup-btn`, handler);
   }
+
+  setFavouriteButtonHandler(handler) {
+    this.setClickHandler(`.event__favorite-checkbox`, handler);
+  }
+
 
   renderOption(option, currentEvent) {
 
