@@ -1,18 +1,45 @@
 import Form from '../components/editEvent';
 import Event from '../components/event';
 import {render, RenderPosition, replaceWith, replace} from '../utils';
+import {Types} from '../mocks/data/types';
+import {getCities} from '../mocks/city';
+
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
 
 export default class EventController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._eventForm = null;
     this._eventCard = null;
     this._onDataChange = onDataChange;
+    this._mode = Mode.DEFAULT;
+    this._onViewChange = onViewChange;
+    this._prevousState = null;
+  }
+
+  setDefaultView() {
+    if (this._mode === Mode.EDIT) {
+      this.replaceWithCard();
+      this._mode = Mode.DEFAULT;
+    }
+  }
+
+  replaceWithCard() {
+    replaceWith(this._eventForm, this._eventCard);
+  }
+
+  replaceWithForm() {
+    replaceWith(this._eventCard, this._eventForm);
   }
 
   renderEvent(event) {
-    const oldEventCard = this._eventCard;
+
     const oldEventForm = this._eventForm;
+    const oldEventCard = this._eventCard;
 
     this._eventCard = new Event(event);
     this._eventForm = new Form(event);
@@ -20,21 +47,24 @@ export default class EventController {
     const onEscKeyDown = (evt) => {
       const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
       if (isEscKey) {
-        replaceWith(this._eventForm, this._eventCard);
+        this.replaceWithCard();
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
     };
 
     this._eventCard.setShowButtonHandler(() => {
-      replaceWith(this._eventCard, this._eventForm);
+      this._onViewChange();
+      this.replaceWithForm();
+      this._mode = Mode.EDIT;
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
     this._eventForm.setSubmitHandler(() => {
-      replaceWith(this._eventForm, this._eventCard);
+      this.replaceWithCard();
     });
 
     this._eventForm.setCollapseHandler(() => {
+      console.log(this._eventForm, this._eventCard);
       replaceWith(this._eventForm, this._eventCard);
     });
 
@@ -42,12 +72,20 @@ export default class EventController {
       this._onDataChange(this, event, Object.assign({}, event, {favorite: !event.favorite}));
     });
 
-    if (oldEventCard && oldEventForm) {
-      replace(this._eventCard, oldEventCard);
+    this._eventForm.selectTypeHandler((evt) => {
+      this._onDataChange(this, event, Object.assign({}, event, {type: Types.find((x) => x.name === evt.target.value)}));
+    });
+
+    this._eventForm.setOnSelectChange((evt) => {
+      const cities = getCities();
+      this._onDataChange(this, event, Object.assign({}, event, {city: cities.find((x) => x.name === evt.target.value)}));
+    });
+
+    if (oldEventForm && oldEventCard) {
       replace(this._eventForm, oldEventForm);
+      replace(this._eventCard, oldEventCard);
     } else {
       render(this._container, this._eventCard.getElement(), RenderPosition.BEFOREEND);
     }
-
   }
 }

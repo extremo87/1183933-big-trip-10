@@ -11,19 +11,25 @@ export default class TripController {
     this._sort = new Sorting();
     this._tripDays = new TripDays();
     this._points = [];
+    this._renderedControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
-  _onDataChange(controller, oldObject, newObject) {
-
-    console.log(oldObject, newObject);
-    const index = this._points.findIndex((object) => object === oldObject);
-
-    if (index === -1) {
-      return;
+  _onDataChange(controller, oldObject, newObject, needToUpdate = true) {
+    if (needToUpdate) {
+      const index = this._points.findIndex((object) => object === oldObject);
+      if (index === -1) {
+        return;
+      }
+      this._points[index] = newObject;
     }
-    this._points[index] = newObject;
+
     controller.renderEvent(newObject);
+  }
+
+  _onViewChange() {
+    this._renderedControllers.forEach((controller) => controller.setDefaultView());
   }
 
   renderLayout(points) {
@@ -57,8 +63,11 @@ export default class TripController {
     const day = new Day();
     render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
     const dayList = day.getEventsContainer();
-    const event = new EventController(dayList, this._onDataChange);
-    points.map((point) => event.renderEvent(point, dayList));
+    this._renderedControllers = points.map((point) => {
+      const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+      event.renderEvent(point, dayList);
+      return event;
+    });
   }
 
   renderEventsWithDays(points) {
@@ -71,11 +80,14 @@ export default class TripController {
       daysElements.push(day);
       render(days, day.getElement(), RenderPosition.BEFOREEND);
     });
-
+    this._renderedControllers = [];
     daysElements.map((element) => {
       const dayList = element.getEventsContainer();
-      const event = new EventController(dayList, this._onDataChange);
-      element.points.map((point) => event.renderEvent(point, dayList));
+      element.points.map((point) => {
+        const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+        event.renderEvent(point, dayList);
+        this._renderedControllers.push(event);
+      });
     });
   }
 

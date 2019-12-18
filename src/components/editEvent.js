@@ -9,6 +9,17 @@ export default class Form extends SmartComponent {
   constructor(event) {
     super();
     this._event = event;
+    this._city = event.city;
+    this._type = event.type;
+    this._flatpickr = null;
+
+    this._selectTypeHandler = null;
+    this._collapseHandler = null;
+    this._selectCityHandler = null;
+    this._favouriteHandler = null;
+    this._formHandler = null;
+    this.recoveryListeners();
+
   }
 
   renderTypeItem(type) {
@@ -21,15 +32,62 @@ export default class Form extends SmartComponent {
   }
 
   setSubmitHandler(handler) {
+    this._formHandler = handler;
     this.setClickHandler(`.event__save-btn`, handler);
   }
 
   setCollapseHandler(handler) {
+    this._collapseHandler = handler;
     this.setClickHandler(`.event__rollup-btn`, handler);
   }
 
   setFavouriteButtonHandler(handler) {
+    this._favouriteHandler = handler;
     this.setClickHandler(`.event__favorite-checkbox`, handler);
+  }
+
+  selectTypeHandler(handler) {
+    this._selectTypeHandler = handler;
+    const radioButtons = this.getElement().querySelectorAll(`.event__type-input`);
+    radioButtons.forEach((button) => {
+      button.addEventListener(`change`, handler);
+    });
+  }
+
+  setOnSelectChange(handler) {
+    this._selectCityHandler = handler;
+    const select = this.getElement().querySelector(`.event__input--destination`);
+    select.addEventListener(`change`, handler);
+  }
+
+  getState() {
+    return {
+      type: this._type,
+      city: this._city
+    };
+  }
+
+  recoveryListeners() {
+    const element = this.getElement();
+    element.querySelector(`.event__save-btn`).addEventListener(`click`, () => {
+      this._formHandler();
+    });
+
+    element.querySelector(`.event__favorite-checkbox`).addEventListener(`click`, () => {
+      this._favouriteHandler();
+    });
+
+    element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+      this.setCollapseHandler();
+    });
+
+    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => this._selectCityHandler);
+
+    const radioButtons = element.querySelectorAll(`.event__type-input`);
+    radioButtons.forEach((button) => {
+      button.addEventListener(`change`, this._selectTypeHandler);
+    });
+
   }
 
 
@@ -50,8 +108,7 @@ export default class Form extends SmartComponent {
     `);
   }
 
-
-  getTemplate() {
+  renderForm() {
     const {type, city, startTime, finishTime, price, favorite, name} = this._event;
     const cities = getCities();
     return (`
@@ -149,5 +206,10 @@ export default class Form extends SmartComponent {
       </form>
       </li>
     `);
+  }
+
+
+  getTemplate() {
+    return this.renderForm();
   }
 }
