@@ -9,7 +9,6 @@ const Mode = {
   EDIT: `edit`,
 };
 
-
 export default class EventController {
   constructor(container, onDataChange, onViewChange) {
     this._container = container;
@@ -19,13 +18,26 @@ export default class EventController {
     this._mode = Mode.DEFAULT;
     this._onViewChange = onViewChange;
     this._prevousEvent = null;
+    this._currentEvent = null;
   }
 
   setDefaultView() {
     if (this._mode === Mode.EDIT) {
+      if (this._prevousEvent !== this._currentEvent) {
+        this._rolledBack();
+        this._prevousEvent = null;
+      }
       this.replaceWithCard();
       this._mode = Mode.DEFAULT;
     }
+  }
+
+  _rolledBack() {
+    this._onDataChange(this, this._currentEvent, this._prevousEvent);
+  }
+
+  _commitChanges() {
+    this._onDataChange(this, this._currentEvent, Object.assign({}, this._currentEvent, this._eventForm.getState()));
   }
 
   replaceWithCard() {
@@ -37,9 +49,15 @@ export default class EventController {
   }
 
   renderEvent(event) {
+
+    if (!this._prevousEvent) {
+      this._prevousEvent = event;
+    }
+
+    this._currentEvent = event;
+
     const oldEventForm = this._eventForm;
     const oldEventCard = this._eventCard;
-
     this._eventCard = new Event(event);
     this._eventForm = new Form(event);
 
@@ -52,9 +70,6 @@ export default class EventController {
     };
 
     this._eventCard.setShowButtonHandler(() => {
-      if (!this._prevousEvent) {
-        this._prevousEvent = event;
-      }
       this._onViewChange();
       this.replaceWithForm();
       this._mode = Mode.EDIT;
@@ -62,7 +77,7 @@ export default class EventController {
     });
 
     this._eventForm.setCollapseHandler(() => {
-      this._onDataChange(this, event, this._prevousEvent);
+      this._rolledBack();
       this.replaceWithCard();
     });
 
@@ -71,24 +86,20 @@ export default class EventController {
     });
 
     this._eventForm.selectTypeHandler((evt) => {
-      const currentType = Types.find((x) => x.name === evt.target.value);
-      this._eventForm._type = currentType;
-      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
+      this._eventForm._type = Types.find((x) => x.name === evt.target.value);
+      this._commitChanges();
     });
 
     this._eventForm.setOnSelectChange((evt) => {
-      const cities = getCities();
-      const currentCity = cities.find((x) => x.name === evt.target.value);
-      this._eventForm._city = currentCity;
-      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
+      this._eventForm._city = getCities().find((x) => x.name === evt.target.value);
+      this._commitChanges();
     });
 
     this._eventForm.setSubmitHandler(() => {
       this._prevousEvent = null;
-      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
+      this._commitChanges();
       this.replaceWithCard();
     });
-
 
     if (oldEventForm && oldEventCard) {
       replace(this._eventForm, oldEventForm);
