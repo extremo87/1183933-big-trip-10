@@ -18,7 +18,7 @@ export default class Form extends SmartComponent {
     this._selectCityHandler = null;
     this._favouriteHandler = null;
     this._formHandler = null;
-    this.recoveryListeners();
+    //  this.recoveryListeners();
 
   }
 

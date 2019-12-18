@@ -18,7 +18,7 @@ export default class EventController {
     this._onDataChange = onDataChange;
     this._mode = Mode.DEFAULT;
     this._onViewChange = onViewChange;
-    this._prevousState = null;
+    this._prevousEvent = null;
   }
 
   setDefaultView() {
@@ -37,7 +37,6 @@ export default class EventController {
   }
 
   renderEvent(event) {
-
     const oldEventForm = this._eventForm;
     const oldEventCard = this._eventCard;
 
@@ -53,19 +52,18 @@ export default class EventController {
     };
 
     this._eventCard.setShowButtonHandler(() => {
+      if (!this._prevousEvent) {
+        this._prevousEvent = event;
+      }
       this._onViewChange();
       this.replaceWithForm();
       this._mode = Mode.EDIT;
       document.addEventListener(`keydown`, onEscKeyDown);
     });
 
-    this._eventForm.setSubmitHandler(() => {
-      this.replaceWithCard();
-    });
-
     this._eventForm.setCollapseHandler(() => {
-      console.log(this._eventForm, this._eventCard);
-      replaceWith(this._eventForm, this._eventCard);
+      this._onDataChange(this, event, this._prevousEvent);
+      this.replaceWithCard();
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
@@ -73,13 +71,24 @@ export default class EventController {
     });
 
     this._eventForm.selectTypeHandler((evt) => {
-      this._onDataChange(this, event, Object.assign({}, event, {type: Types.find((x) => x.name === evt.target.value)}));
+      const currentType = Types.find((x) => x.name === evt.target.value);
+      this._eventForm._type = currentType;
+      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
     });
 
     this._eventForm.setOnSelectChange((evt) => {
       const cities = getCities();
-      this._onDataChange(this, event, Object.assign({}, event, {city: cities.find((x) => x.name === evt.target.value)}));
+      const currentCity = cities.find((x) => x.name === evt.target.value);
+      this._eventForm._city = currentCity;
+      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
     });
+
+    this._eventForm.setSubmitHandler(() => {
+      this._prevousEvent = null;
+      this._onDataChange(this, event, Object.assign({}, event, this._eventForm.getState()));
+      this.replaceWithCard();
+    });
+
 
     if (oldEventForm && oldEventCard) {
       replace(this._eventForm, oldEventForm);

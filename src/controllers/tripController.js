@@ -16,15 +16,12 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
   }
 
-  _onDataChange(controller, oldObject, newObject, needToUpdate = true) {
-    if (needToUpdate) {
-      const index = this._points.findIndex((object) => object === oldObject);
-      if (index === -1) {
-        return;
-      }
-      this._points[index] = newObject;
+  _onDataChange(controller, oldObject, newObject) {
+    const index = this._points.findIndex((object) => object === oldObject);
+    if (index === -1) {
+      return;
     }
-
+    this._points[index] = newObject;
     controller.renderEvent(newObject);
   }
 
