@@ -74,7 +74,6 @@ export default class Form extends SmartComponent {
       handler(evt);
       this.rerender();
     });
-    
   }
 
   selectTypeHandler(handler) {
