@@ -3,14 +3,20 @@ import {Types} from '../mocks/data/types';
 import {CURRENCY_SIGN} from '../config';
 import {Options} from '../mocks/data/options';
 import SmartComponent from './smartComponent';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/themes/light.css';
+
 
 export default class Form extends SmartComponent {
 
   constructor(event) {
     super();
     this._event = event;
+    this._name = event.name;
     this._city = event.city;
     this._type = event.type;
+    this._startTime = event.startTime;
+    this._finishTime = event.finishTime;
     this._flatpickr = null;
 
     this._selectTypeHandler = null;
@@ -18,6 +24,7 @@ export default class Form extends SmartComponent {
     this._selectCityHandler = null;
     this._favouriteHandler = null;
     this._formHandler = null;
+    this._applyFlatpickr();
     //  this.recoveryListeners();
 
   }
@@ -60,34 +67,37 @@ export default class Form extends SmartComponent {
     select.addEventListener(`change`, handler);
   }
 
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateElement = this.getElement().querySelector(`.event__input--time`);
+    this._flatpickr = flatpickr(dateElement, {
+      dateFormat: `d/m/Y H:i`,
+      defaultDate: this._startTime.valueOf(),
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    });
+
+  }
+
   getState() {
     return {
       type: this._type,
-      city: this._city
+      city: this._city,
+      name: this._name
     };
   }
 
   recoveryListeners() {
-    const element = this.getElement();
-    element.querySelector(`.event__save-btn`).addEventListener(`click`, () => {
-      this._formHandler();
-    });
-
-    element.querySelector(`.event__favorite-checkbox`).addEventListener(`click`, () => {
-      this._favouriteHandler();
-    });
-
-    element.querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      this.setCollapseHandler();
-    });
-
-    element.querySelector(`.event__input--destination`).addEventListener(`change`, () => this._selectCityHandler);
-
-    const radioButtons = element.querySelectorAll(`.event__type-input`);
-    radioButtons.forEach((button) => {
-      button.addEventListener(`change`, this._selectTypeHandler);
-    });
-
+    this.setSubmitHandler(this._formHandler);
+    this.setFavouriteButtonHandler(this._favouriteHandler);
+    this.setCollapseHandler(this.setCollapseHandler);
+    this.setOnSelectChange(this._selectCityHandler);
+    this.selectTypeHandler(this._selectTypeHandler);
   }
 
 

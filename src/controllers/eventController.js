@@ -3,6 +3,7 @@ import Event from '../components/event';
 import {render, RenderPosition, replaceWith, replace} from '../utils';
 import {Types} from '../mocks/data/types';
 import {getCities} from '../mocks/city';
+import {Activities} from '../mocks/data/activities';
 
 const Mode = {
   DEFAULT: `default`,
@@ -87,6 +88,7 @@ export default class EventController {
 
     this._eventForm.selectTypeHandler((evt) => {
       this._eventForm._type = Types.find((x) => x.name === evt.target.value);
+      this._eventForm._name = Activities.get(this._eventForm._type.name);
       this._commitChanges();
     });
 
