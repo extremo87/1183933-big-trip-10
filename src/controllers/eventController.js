@@ -4,6 +4,7 @@ import {render, RenderPosition, replaceWith, replace} from '../utils';
 import {Types} from '../mocks/data/types';
 import {getCities} from '../mocks/city';
 import {Activities} from '../mocks/data/activities';
+import moment from 'moment';
 
 const Mode = {
   DEFAULT: `default`,
@@ -11,7 +12,7 @@ const Mode = {
 };
 
 export default class EventController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, rerenderEventsWithDays) {
     this._container = container;
     this._eventForm = null;
     this._eventCard = null;
@@ -20,6 +21,7 @@ export default class EventController {
     this._onViewChange = onViewChange;
     this._prevousEvent = null;
     this._currentEvent = null;
+    this._rerenderEventsWithDays = rerenderEventsWithDays;
   }
 
   setDefaultView() {
@@ -97,10 +99,21 @@ export default class EventController {
       this._commitChanges();
     });
 
+    this._eventForm.setStartTimeHandler((evt) => {
+      this._eventForm._startTime = moment(evt.target.value, `DD/MM/YYYY hh:mm`);
+      this._commitChanges();
+    });
+
+    this._eventForm.setFinishTimeHandler((evt) => {
+      this._eventForm._finishTime = moment(evt.target.value, `DD/MM/YYYY hh:mm`);
+      this._commitChanges();
+    });
+
     this._eventForm.setSubmitHandler(() => {
       this._prevousEvent = null;
       this._commitChanges();
       this.replaceWithCard();
+      this._rerenderEventsWithDays();
     });
 
     if (oldEventForm && oldEventCard) {

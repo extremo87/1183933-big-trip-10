@@ -102,3 +102,31 @@ export const replace = (newComponent, oldComponent) => {
   }
 };
 
+export const calculateDuration = (startTime, finishTime) => {
+
+  const diff = finishTime.diff(startTime);
+  const diffDuration = moment.duration(diff);
+
+  let duration = ``;
+
+  if (diffDuration.days() !== 0) {
+    duration += `${diffDuration.days()}D `;
+  }
+
+  if (diffDuration.hours() !== 0) {
+    duration += `${diffDuration.hours()}H `;
+  }
+
+  if (diffDuration.minutes() !== 0) {
+    duration += `${diffDuration.minutes()}M`;
+  }
+
+  return duration;
+};
+
+export const calculateDurationMs = (startTime, finishTime) => {
+  const diff = finishTime.diff(startTime);
+  const diffDuration = moment.duration(diff);
+  return diffDuration.asMilliseconds();
+};
+

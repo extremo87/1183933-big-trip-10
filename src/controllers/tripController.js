@@ -14,15 +14,21 @@ export default class TripController {
     this._renderedControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this.rerenderEventsWithDays = this.rerenderEventsWithDays.bind(this);
   }
 
   _onDataChange(controller, oldObject, newObject) {
+
     const index = this._points.findIndex((object) => object === oldObject);
     if (index === -1) {
       return;
     }
     this._points[index] = newObject;
     controller.renderEvent(newObject);
+  }
+
+  rerenderEventsWithDays() {
+    this.renderEventsWithDays(this._points);
   }
 
   _onViewChange() {
@@ -55,13 +61,12 @@ export default class TripController {
     this.renderEventsWithDays(this._points);
   }
 
-
   renderEventsWithoutDays(points) {
     const day = new Day();
     render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
     const dayList = day.getEventsContainer();
     this._renderedControllers = points.map((point) => {
-      const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+      const event = new EventController(dayList, this._onDataChange, this._onViewChange, this.rerenderEventsWithDays);
       event.renderEvent(point, dayList);
       return event;
     });
@@ -81,7 +86,7 @@ export default class TripController {
     daysElements.map((element) => {
       const dayList = element.getEventsContainer();
       element.points.map((point) => {
-        const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+        const event = new EventController(dayList, this._onDataChange, this._onViewChange, this.rerenderEventsWithDays);
         event.renderEvent(point, dayList);
         this._renderedControllers.push(event);
       });

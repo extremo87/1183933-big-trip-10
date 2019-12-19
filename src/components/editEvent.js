@@ -5,6 +5,7 @@ import {Options} from '../mocks/data/options';
 import SmartComponent from './smartComponent';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/light.css';
+import {calculateDuration, calculateDurationMs} from '../utils';
 
 
 export default class Form extends SmartComponent {
@@ -17,7 +18,8 @@ export default class Form extends SmartComponent {
     this._type = event.type;
     this._startTime = event.startTime;
     this._finishTime = event.finishTime;
-    this._flatpickr = null;
+    this._flatpickrStart = null;
+    this._flatpickrFinish = null;
 
     this._selectTypeHandler = null;
     this._collapseHandler = null;
@@ -25,8 +27,13 @@ export default class Form extends SmartComponent {
     this._favouriteHandler = null;
     this._formHandler = null;
     this._applyFlatpickr();
-    //  this.recoveryListeners();
+    // this.recoveryListeners();
 
+  }
+
+  rerender() {
+    super.rerender();
+    this._applyFlatpickr();
   }
 
   renderTypeItem(type) {
@@ -53,6 +60,23 @@ export default class Form extends SmartComponent {
     this.setClickHandler(`.event__favorite-checkbox`, handler);
   }
 
+  setStartTimeHandler(handler) {
+    const element = this.getElement().querySelector(`.start-time`);
+    element.addEventListener(`change`, (evt) => {
+      handler(evt);
+      this.rerender();
+    });
+  }
+
+  setFinishTimeHandler(handler) {
+    const element = this.getElement().querySelector(`.finish-time`);
+    element.addEventListener(`change`, (evt) => {
+      handler(evt);
+      this.rerender();
+    });
+    
+  }
+
   selectTypeHandler(handler) {
     this._selectTypeHandler = handler;
     const radioButtons = this.getElement().querySelectorAll(`.event__type-input`);
@@ -68,34 +92,52 @@ export default class Form extends SmartComponent {
   }
 
   _applyFlatpickr() {
-    if (this._flatpickr) {
-      this._flatpickr.destroy();
-      this._flatpickr = null;
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+    if (this._flatpickrFinish) {
+      this._flatpickrFinish.destroy();
+      this._flatpickrFinish = null;
     }
 
-    const dateElement = this.getElement().querySelector(`.event__input--time`);
-    this._flatpickr = flatpickr(dateElement, {
+    const startTimeElement = this.getElement().querySelector(`.start-time`);
+    const finishTimeElement = this.getElement().querySelector(`.finish-time`);
+    this._flatpickrStart = flatpickr(startTimeElement, {
       dateFormat: `d/m/Y H:i`,
       defaultDate: this._startTime.valueOf(),
+      maxDate: this._finishTime.valueOf(),
       enableTime: true,
       // eslint-disable-next-line camelcase
       time_24hr: true,
     });
 
+    this._flatpickrFinish = flatpickr(finishTimeElement, {
+      dateFormat: `d/m/Y H:i`,
+      defaultDate: this._finishTime.valueOf(),
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+      minDate: this._startTime.valueOf(),
+    });
   }
 
   getState() {
     return {
       type: this._type,
       city: this._city,
-      name: this._name
+      name: this._name,
+      startTime: this._startTime,
+      finishTime: this._finishTime,
+      duration: calculateDuration(this._startTime, this._finishTime),
+      durationInMs: calculateDurationMs(this._startTime, this._finishTime)
     };
   }
 
   recoveryListeners() {
     this.setSubmitHandler(this._formHandler);
     this.setFavouriteButtonHandler(this._favouriteHandler);
-    this.setCollapseHandler(this.setCollapseHandler);
+    this.setCollapseHandler(this._collapseHandler);
     this.setOnSelectChange(this._selectCityHandler);
     this.selectTypeHandler(this._selectTypeHandler);
   }
@@ -159,12 +201,12 @@ export default class Form extends SmartComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time start-time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime.format(`DD/MM/YY hh:mm`)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${finishTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time finish-time" id="event-end-time-1" type="text" name="event-end-time" value="${finishTime.format(`DD/MM/YY hh:mm`)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
