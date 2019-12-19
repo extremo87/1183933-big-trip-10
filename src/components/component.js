@@ -24,7 +24,7 @@ export default class Component {
   }
 
   removeElement() {
-    this._element.remove();
+    this._element = null;
   }
 
   clearElement() {

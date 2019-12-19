@@ -2,13 +2,31 @@ import {getCities} from '../mocks/city';
 import {Types} from '../mocks/data/types';
 import {CURRENCY_SIGN} from '../config';
 import {Options} from '../mocks/data/options';
-import Component from './component';
+import SmartComponent from './smartComponent';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/themes/light.css';
 
-export default class Form extends Component {
+
+export default class Form extends SmartComponent {
 
   constructor(event) {
     super();
     this._event = event;
+    this._name = event.name;
+    this._city = event.city;
+    this._type = event.type;
+    this._startTime = event.startTime;
+    this._finishTime = event.finishTime;
+    this._flatpickr = null;
+
+    this._selectTypeHandler = null;
+    this._collapseHandler = null;
+    this._selectCityHandler = null;
+    this._favouriteHandler = null;
+    this._formHandler = null;
+    this._applyFlatpickr();
+    //  this.recoveryListeners();
+
   }
 
   renderTypeItem(type) {
@@ -21,12 +39,67 @@ export default class Form extends Component {
   }
 
   setSubmitHandler(handler) {
+    this._formHandler = handler;
     this.setClickHandler(`.event__save-btn`, handler);
   }
 
   setCollapseHandler(handler) {
+    this._collapseHandler = handler;
     this.setClickHandler(`.event__rollup-btn`, handler);
   }
+
+  setFavouriteButtonHandler(handler) {
+    this._favouriteHandler = handler;
+    this.setClickHandler(`.event__favorite-checkbox`, handler);
+  }
+
+  selectTypeHandler(handler) {
+    this._selectTypeHandler = handler;
+    const radioButtons = this.getElement().querySelectorAll(`.event__type-input`);
+    radioButtons.forEach((button) => {
+      button.addEventListener(`change`, handler);
+    });
+  }
+
+  setOnSelectChange(handler) {
+    this._selectCityHandler = handler;
+    const select = this.getElement().querySelector(`.event__input--destination`);
+    select.addEventListener(`change`, handler);
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const dateElement = this.getElement().querySelector(`.event__input--time`);
+    this._flatpickr = flatpickr(dateElement, {
+      dateFormat: `d/m/Y H:i`,
+      defaultDate: this._startTime.valueOf(),
+      enableTime: true,
+      // eslint-disable-next-line camelcase
+      time_24hr: true,
+    });
+
+  }
+
+  getState() {
+    return {
+      type: this._type,
+      city: this._city,
+      name: this._name
+    };
+  }
+
+  recoveryListeners() {
+    this.setSubmitHandler(this._formHandler);
+    this.setFavouriteButtonHandler(this._favouriteHandler);
+    this.setCollapseHandler(this.setCollapseHandler);
+    this.setOnSelectChange(this._selectCityHandler);
+    this.selectTypeHandler(this._selectTypeHandler);
+  }
+
 
   renderOption(option, currentEvent) {
 
@@ -45,8 +118,7 @@ export default class Form extends Component {
     `);
   }
 
-
-  getTemplate() {
+  renderForm() {
     const {type, city, startTime, finishTime, price, favorite, name} = this._event;
     const cities = getCities();
     return (`
@@ -144,5 +216,10 @@ export default class Form extends Component {
       </form>
       </li>
     `);
+  }
+
+
+  getTemplate() {
+    return this.renderForm();
   }
 }

@@ -1,48 +1,23 @@
 import {CURRENCY_SIGN} from '../config';
 import Component from './component';
-import Form from './editEvent';
-import {render, RenderPosition, replaceWith} from '../utils';
 
 export default class Event extends Component {
 
   constructor(event) {
     super();
     this._event = event;
+    this._showBtnHandler = null;
+    this.recoveryListeners();
   }
 
   setShowButtonHandler(handler) {
+    this._showBtnHandler = handler;
     this.setClickHandler(`.event__rollup-btn`, handler);
   }
 
-  static renderEvent(event, position) {
-    const eventCard = new this(event);
-    const eventForm = new Form(event);
-
-
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-      if (isEscKey) {
-        replaceWith(eventForm, eventCard);
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    eventCard.setShowButtonHandler(() => {
-      replaceWith(eventCard, eventForm);
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    eventForm.setSubmitHandler(() => {
-      replaceWith(eventForm, eventCard);
-    });
-
-    eventForm.setCollapseHandler(() => {
-      replaceWith(eventForm, eventCard);
-    });
-
-    render(position, eventCard.getElement(), RenderPosition.BEFOREEND);
+  recoveryListeners() {
+    this.setClickHandler(`.event__rollup-btn`, this._showBtnHandler);
   }
-
 
   getTemplate() {
     const {name, city, startTime, finishTime, duration, price, options, type} = this._event;

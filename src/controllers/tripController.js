@@ -1,9 +1,8 @@
-import Event from '../components/event';
-import Form from '../components/editEvent';
 import Sorting from '../components/sorting';
 import Day from '../components/day';
 import TripDays from '../components/tripDays';
-import {render, RenderPosition, replaceWith, generateDays} from '../utils';
+import {render, RenderPosition, generateDays} from '../utils';
+import EventController from './eventController';
 
 export default class TripController {
 
@@ -11,37 +10,28 @@ export default class TripController {
     this._container = container;
     this._sort = new Sorting();
     this._tripDays = new TripDays();
+    this._points = [];
+    this._renderedControllers = [];
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
-  renderEvent(event, position) {
-    const eventCard = new Event(event);
-    const eventForm = new Form(event);
+  _onDataChange(controller, oldObject, newObject) {
+    const index = this._points.findIndex((object) => object === oldObject);
+    if (index === -1) {
+      return;
+    }
+    this._points[index] = newObject;
+    controller.renderEvent(newObject);
+  }
 
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-      if (isEscKey) {
-        replaceWith(eventForm, eventCard);
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    eventCard.setShowButtonHandler(() => {
-      replaceWith(eventCard, eventForm);
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    eventForm.setSubmitHandler(() => {
-      replaceWith(eventForm, eventCard);
-    });
-
-    eventForm.setCollapseHandler(() => {
-      replaceWith(eventForm, eventCard);
-    });
-
-    render(position, eventCard.getElement(), RenderPosition.BEFOREEND);
+  _onViewChange() {
+    this._renderedControllers.forEach((controller) => controller.setDefaultView());
   }
 
   renderLayout(points) {
+
+    this._points = points;
 
     render(this._container, this._sort.getElement(), RenderPosition.BEFOREEND);
     render(this._container, this._tripDays.getElement(), RenderPosition.BEFOREEND);
@@ -51,18 +41,18 @@ export default class TripController {
       this._tripDays.clearElement();
       switch (sortType) {
         case sortTypes().DEFAULT:
-          this.renderEventsWithDays(points);
+          this.renderEventsWithDays(this._points);
           break;
         case sortTypes().PRICE:
-          this.renderEventsWithoutDays(points.slice().sort((a, b) => b.price - a.price));
+          this.renderEventsWithoutDays(this._points.slice().sort((a, b) => b.price - a.price));
           break;
         case sortTypes().DATE:
-          this.renderEventsWithoutDays(points.slice().sort((a, b) => b.durationInMs - a.durationInMs));
+          this.renderEventsWithoutDays(this._points.slice().sort((a, b) => b.durationInMs - a.durationInMs));
           break;
       }
     });
 
-    this.renderEventsWithDays(points);
+    this.renderEventsWithDays(this._points);
   }
 
 
@@ -70,7 +60,11 @@ export default class TripController {
     const day = new Day();
     render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
     const dayList = day.getEventsContainer();
-    points.map((point) => this.renderEvent(point, dayList));
+    this._renderedControllers = points.map((point) => {
+      const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+      event.renderEvent(point, dayList);
+      return event;
+    });
   }
 
   renderEventsWithDays(points) {
@@ -83,10 +77,14 @@ export default class TripController {
       daysElements.push(day);
       render(days, day.getElement(), RenderPosition.BEFOREEND);
     });
-
+    this._renderedControllers = [];
     daysElements.map((element) => {
       const dayList = element.getEventsContainer();
-      element.points.map((point) => this.renderEvent(point, dayList));
+      element.points.map((point) => {
+        const event = new EventController(dayList, this._onDataChange, this._onViewChange);
+        event.renderEvent(point, dayList);
+        this._renderedControllers.push(event);
+      });
     });
   }
 
