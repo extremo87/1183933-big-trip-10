@@ -6,15 +6,24 @@ import EventController from './eventController';
 
 export default class TripController {
 
-  constructor(container) {
+  constructor(container, model) {
     this._container = container;
+    this._model = model;
+
     this._sort = new Sorting();
     this._tripDays = new TripDays();
     this._points = [];
     this._renderedControllers = [];
+
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._sortHandler = this._sortHandler.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
     this.rerenderEventsWithDays = this.rerenderEventsWithDays.bind(this);
+
+    this._model.setFilterChangeHandler(this._onFilterChange);
+    this._sort.setOnClickHandler(this._sortHandler);
+    this._currentSortType = this._sort.sortTypes().DEFAULT;
   }
 
   _onDataChange(controller, oldObject, newObject) {
@@ -35,29 +44,28 @@ export default class TripController {
     this._renderedControllers.forEach((controller) => controller.setDefaultView());
   }
 
-  renderLayout(points) {
+  _sortHandler(sortType) {
+    this._currentSortType = sortType;
+    const sortTypes = this._sort.sortTypes;
+    const points = this._model.getPoints();
+    this._tripDays.clearElement();
+    switch (sortType) {
+      case sortTypes().DEFAULT:
+        this.renderEventsWithDays(points);
+        break;
+      case sortTypes().PRICE:
+        this.renderEventsWithoutDays(points.sort((a, b) => b.price - a.price));
+        break;
+      case sortTypes().DATE:
+        this.renderEventsWithoutDays(points.sort((a, b) => b.durationInMs - a.durationInMs));
+        break;
+    }
+  }
 
-    this._points = points;
-
+  renderLayout() {
+    this._points = this._model.getPoints();
     render(this._container, this._sort.getElement(), RenderPosition.BEFOREEND);
     render(this._container, this._tripDays.getElement(), RenderPosition.BEFOREEND);
-
-    this._sort.setOnClickHandler((sortType) => {
-      const sortTypes = this._sort.sortTypes;
-      this._tripDays.clearElement();
-      switch (sortType) {
-        case sortTypes().DEFAULT:
-          this.renderEventsWithDays(this._points);
-          break;
-        case sortTypes().PRICE:
-          this.renderEventsWithoutDays(this._points.slice().sort((a, b) => b.price - a.price));
-          break;
-        case sortTypes().DATE:
-          this.renderEventsWithoutDays(this._points.slice().sort((a, b) => b.durationInMs - a.durationInMs));
-          break;
-      }
-    });
-
     this.renderEventsWithDays(this._points);
   }
 
@@ -91,6 +99,20 @@ export default class TripController {
         this._renderedControllers.push(event);
       });
     });
+  }
+
+  _updatePoints() {
+    this._tripDays.clearElement();
+    this._removePoints();
+    this._sortHandler(this._currentSortType);
+  }
+
+  _removePoints() {
+    this._renderedControllers.forEach((controller) => controller.destroy());
+    this._renderedControllers = [];
+  }
+  _onFilterChange() {
+    this._updatePoints();
   }
 
 }

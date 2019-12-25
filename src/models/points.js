@@ -19,9 +19,9 @@ export default class PointModel {
       case FilterType.ALL:
         return this._points;
       case FilterType.FUTURE:
-        return this._points.filter((item) => item.startDate < nowDate);
+        return this._points.filter((item) => item.startTime > nowDate);
       case FilterType.PAST:
-        return this._points.filter((item) => item.startDate > nowDate);
+        return this._points.filter((item) => item.startTime < nowDate);
     }
     return this._points;
   }

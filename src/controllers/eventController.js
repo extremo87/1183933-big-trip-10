@@ -1,6 +1,6 @@
 import Form from '../components/editEvent';
 import Event from '../components/event';
-import {render, RenderPosition, replaceWith, replace} from '../utils';
+import {render, RenderPosition, replaceWith, replace, remove} from '../utils';
 import {Types} from '../mocks/data/types';
 import {getCities} from '../mocks/city';
 import {Activities} from '../mocks/data/activities';
@@ -35,6 +35,13 @@ export default class EventController {
     }
   }
 
+  destroy() {
+    remove(this._eventForm);
+    remove(this._eventCard);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+
   _rolledBack() {
     this._onDataChange(this, this._currentEvent, this._prevousEvent);
   }
@@ -51,6 +58,13 @@ export default class EventController {
     replaceWith(this._eventCard, this._eventForm);
   }
 
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      this.replaceWithCard();
+    }
+  }
+
   renderEvent(event) {
 
     if (!this._prevousEvent) {
@@ -64,19 +78,11 @@ export default class EventController {
     this._eventCard = new Event(event);
     this._eventForm = new Form(event);
 
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-      if (isEscKey) {
-        this.replaceWithCard();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
     this._eventCard.setShowButtonHandler(() => {
       this._onViewChange();
       this.replaceWithForm();
       this._mode = Mode.EDIT;
-      document.addEventListener(`keydown`, onEscKeyDown);
+      document.addEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventForm.setCollapseHandler(() => {

@@ -1,25 +1,31 @@
 import Component from './component';
 
 export default class Filters extends Component {
+
+  constructor(filters, model) {
+    super();
+    this._filters = filters;
+    this._model = model;
+  }
+
+  createFilter(filter) {
+    return (`<div class="trip-filters__filter">
+        <input id="filter-${filter.title}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.title}" ${filter.isChecked ? `checked` : ``}>
+        <label class="trip-filters__filter-label" for="filter-${filter.title}">${filter.title}</label>
+    </div>`);
+  }
+
   getTemplate() {
     return (`<form class="trip-filters" action="#" method="get">
-      <div class="trip-filters__filter">
-        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
-        <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-      </div>
-  
-      <div class="trip-filters__filter">
-        <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-        <label class="trip-filters__filter-label" for="filter-future">Future</label>
-      </div>
-  
-      <div class="trip-filters__filter">
-        <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past">
-        <label class="trip-filters__filter-label" for="filter-past">Past</label>
-      </div>
-  
+          ${this._filters.map((filter) => this.createFilter(filter)).join(`\n`)}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`);
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      handler(evt.target.value);
+    });
   }
 }
 
