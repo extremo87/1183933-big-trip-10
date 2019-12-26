@@ -8,6 +8,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/light.css';
 import {calculateDuration, calculateDurationMs} from '../utils';
 import moment from 'moment';
+import he from 'he';
 
 
 export default class Form extends SmartComponent {
@@ -161,7 +162,7 @@ export default class Form extends SmartComponent {
     const formFinishTime = moment(formData.get(`event-end-time`), `DD/MM/YYYY hh:mm`);
     const formDuration = calculateDuration(formStartTime, formFinishTime);
     const formDurationMs = calculateDurationMs(formStartTime, formFinishTime);
-    const formPrice = formData.get(`event-price`);
+    const formPrice = he.encode(formData.get(`event-price`));
     const cities = getCities();
     const formCity = cities.find((city) => city.name === formName);
     const formType = this._type;

@@ -55,7 +55,6 @@ export default class EventController {
   }
 
   destroy() {
-    this._container.remove();
     remove(this._eventForm);
     remove(this._eventCard);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
@@ -98,6 +97,7 @@ export default class EventController {
     });
 
     this._eventForm.setCollapseHandler(() => {
+      this._onViewChange();
       this.replaceWithCard();
     });
 
