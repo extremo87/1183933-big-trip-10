@@ -1,11 +1,13 @@
 import {getCities} from '../mocks/city';
 import {Types} from '../mocks/data/types';
-import {CURRENCY_SIGN} from '../config';
+import {CURRENCY_SIGN, CURRENCY} from '../config';
 import {Options} from '../mocks/data/options';
+import {Activities} from '../mocks/data/activities';
 import SmartComponent from './smartComponent';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/light.css';
 import {calculateDuration, calculateDurationMs} from '../utils';
+import moment from 'moment';
 
 
 export default class Form extends SmartComponent {
@@ -39,7 +41,7 @@ export default class Form extends SmartComponent {
   renderTypeItem(type) {
     return (`
         <div class="event__type-item">
-            <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.name}">
+            <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.name}" ${ (this._type.name === type.name) ? `checked` : ``}>
             <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${type.name}</label>
         </div>
     `);
@@ -58,6 +60,10 @@ export default class Form extends SmartComponent {
   setFavouriteButtonHandler(handler) {
     this._favouriteHandler = handler;
     this.setClickHandler(`.event__favorite-checkbox`, handler);
+  }
+
+  setDeleteButtonHandler(handler) {
+    this.setClickHandler(`.event__reset-btn`, handler);
   }
 
   setStartTimeHandler(handler) {
@@ -80,14 +86,21 @@ export default class Form extends SmartComponent {
     this._selectTypeHandler = handler;
     const radioButtons = this.getElement().querySelectorAll(`.event__type-input`);
     radioButtons.forEach((button) => {
-      button.addEventListener(`change`, handler);
+      button.addEventListener(`change`, (evt) => {
+        handler(evt);
+        this.rerender();
+      });
     });
+
   }
 
   setOnSelectChange(handler) {
     this._selectCityHandler = handler;
     const select = this.getElement().querySelector(`.event__input--destination`);
-    select.addEventListener(`change`, handler);
+    select.addEventListener(`change`, (evt) => {
+      handler(evt);
+      this.rerender();
+    });
   }
 
   _applyFlatpickr() {
@@ -141,6 +154,47 @@ export default class Form extends SmartComponent {
     this.selectTypeHandler(this._selectTypeHandler);
   }
 
+  parseFormData(formData) {
+
+    const formName = formData.get(`event-destination`);
+    const formStartTime = moment(formData.get(`event-start-time`), `DD/MM/YYYY hh:mm`);
+    const formFinishTime = moment(formData.get(`event-end-time`), `DD/MM/YYYY hh:mm`);
+    const formDuration = calculateDuration(formStartTime, formFinishTime);
+    const formDurationMs = calculateDurationMs(formStartTime, formFinishTime);
+    const formPrice = formData.get(`event-price`);
+    const cities = getCities();
+    const formCity = cities.find((city) => city.name === formName);
+    const formType = this._type;
+    const formOptions = [];
+    Options.map((option) => {
+      if (formData.has(`event-offer-${option.name}`)) {
+        formOptions.push(option);
+      }
+    });
+
+    const formId = formData.get(`event-id`) === `undefined` ? Math.random().toString(36).substr(2, 9) : formData.get(`event-id`);
+
+    return {
+      id: formId,
+      name: Activities.get(formType.name),
+      city: formCity,
+      type: formType,
+      options: formOptions,
+      startTime: formStartTime,
+      finishTime: formFinishTime,
+      duration: formDuration,
+      durationInMs: formDurationMs,
+      price: formPrice,
+      currency: CURRENCY,
+      favorite: formData.has(`event-favorite`),
+    };
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`.event--edit`);
+    const formData = new FormData(form);
+    return this.parseFormData(formData);
+  }
 
   renderOption(option, currentEvent) {
 
@@ -160,37 +214,44 @@ export default class Form extends SmartComponent {
   }
 
   renderForm() {
-    const {type, city, startTime, finishTime, price, favorite, name} = this._event;
+    const {price, favorite, id} = this._event;
+    const cityName = this._city === undefined ? `` : this._city.name;
+    const cityDescription = this._city === undefined ? `` : this._city.description;
+    const cityImages = this._city === undefined ? [] : this._city.images;
+
     const cities = getCities();
     return (`
         <li class="trip-events__item"><form class="event  event--edit" action="#" method="post">
+        <input class="some-hidden" name="type-event" type="hidden" value="${this._type.name}">
+        <input class="some-hidden" name="event-id" type="hidden" value="${id}">
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.img}" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.img}" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" name="type" type="checkbox">
+           
 
             <div class="event__type-list">
               <!-- TODO: create 1 method to render both lists-->
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${Types.filter((item) => item.type === `transfer` && item.name !== type.name).map((item) => this.renderTypeItem(item))}
+                ${Types.filter((item) => item.type === `transfer` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${Types.filter((item) => item.type === `activity` && item.name !== type.name).map((item) => this.renderTypeItem(item))}
+                ${Types.filter((item) => item.type === `activity` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
             </div>
           </div>
 
           <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__${type.name}-output" for="event-destination-1">
-            ${name}
+            <label class="event__label  event__${this._type.name}-output" for="event-destination-1">
+            ${this._name}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${cityName}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${cities.map((item) => `<option value="${item.name}"></option>`)}
             </datalist>
@@ -200,12 +261,12 @@ export default class Form extends SmartComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time start-time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time start-time" id="event-start-time-1" type="text" name="event-start-time" value="${this._startTime.format(`DD/MM/YY hh:mm`)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time finish-time" id="event-end-time-1" type="text" name="event-end-time" value="${finishTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time finish-time" id="event-end-time-1" type="text" name="event-end-time" value="${this._finishTime.format(`DD/MM/YY hh:mm`)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -239,17 +300,17 @@ export default class Form extends SmartComponent {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${Options.filter((option) => option.type === type.name).map((option) => this.renderOption(option, this._event)).join(`\n`)}
+              ${Options.filter((option) => option.type === this._type.name).map((option) => this.renderOption(option, this._event)).join(`\n`)}
             </div>
           </section>
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description"> ${city.description}</p>
+            <p class="event__destination-description"> ${cityDescription}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-              ${city.images.map((image) => `<img class="event__photo" src="${image}" alt="Event photo">`)}   
+              ${cityImages.map((image) => `<img class="event__photo" src="${image}" alt="Event photo">`)}   
               </div>
             </div>
           </section>
