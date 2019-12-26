@@ -59,7 +59,7 @@ export default class TripController {
       this._createForm = new Day();
       render(this._tripDays.getElement(), this._createForm.getElement(), RenderPosition.AFTERBEGIN);
     }
-    const createForm = new EventController(this._createForm, this._onDataChange, this._onViewChange, this.rerenderEvents); 
+    const createForm = new EventController(this._createForm, this._onDataChange, this._onViewChange, this.rerenderEvents);
     createForm.render(EmptyPoint, ControllerMode.ADD);
     this._renderedControllers = [].concat(createForm, this._renderedControllers);
   }
