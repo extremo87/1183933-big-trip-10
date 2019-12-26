@@ -130,3 +130,9 @@ export const calculateDurationMs = (startTime, finishTime) => {
   return diffDuration.asMilliseconds();
 };
 
+export const remove = (component) => {
+  component.getElement().remove();
+  component.removeElement();
+};
+
+

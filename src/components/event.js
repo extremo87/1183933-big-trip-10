@@ -21,13 +21,14 @@ export default class Event extends Component {
 
   getTemplate() {
     const {name, city, startTime, finishTime, duration, price, options, type} = this._event;
+    const cityName = city === undefined ? `` : city.name;
 
     return (`<li class="trip-events__item">
     <div class="event">
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.img}" alt="Event type icon">
       </div>
-      <h3 class="event__title">${name} at ${city.name}</h3>
+      <h3 class="event__title">${name} at ${cityName}</h3>
   
       <div class="event__schedule">
         <p class="event__time">
@@ -44,11 +45,11 @@ export default class Event extends Component {
   
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        <li class="event__offer">
+        ${ options.length > 0 ? ` <li class="event__offer">
           <span class="event__offer-title">${options[0].name}</span>
           &plus;
           ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${options[0].price}</span>
-         </li>
+         </li>` : ``}
       </ul>
   
       <button class="event__rollup-btn" type="button">

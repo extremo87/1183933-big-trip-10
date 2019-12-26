@@ -44,6 +44,7 @@ export const generatePoint = () => {
   const currentCity = getRandomCity(getCities());
 
   return {
+    id: Math.random().toString(36).substr(2, 9),
     name: Activities.get(randomType.name),
     city: currentCity,
     type: randomType,
