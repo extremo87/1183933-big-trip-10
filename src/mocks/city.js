@@ -14,7 +14,12 @@ const getRandomDescriprion = (someText) => {
 const generateImages = (count) => {
   return new Array(count)
     .fill(``)
-    .map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
+    .map(() => {
+      return {
+        src: `http://picsum.photos/300/150?r=${Math.random()}`,
+        description: ``
+      };
+    });
 };
 
 export const getCities = () => {

@@ -1,213 +1,178 @@
-import {CURRENCY} from '../../config';
 export const Options = [
   {
-    name: `Book a taxi`,
     type: `taxi`,
-    price: 20,
-    currency: CURRENCY,
-    priority: true
+    offers: [
+      {
+        title: `Upgrade to a business class`,
+        price: 140
+      },
+      {
+        title: `Choose the radio station`,
+        price: 140
+      },
+      {
+        title: `Choose temperature`,
+        price: 100
+      },
+      {
+        title: `Drive quickly, I'm in a hurry`,
+        price: 80
+      },
+      {
+        title: `Drive slowly`,
+        price: 160
+      }
+    ]
   },
   {
-    name: `Book a premium taxi`,
-    type: `taxi`,
-    price: 35,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Book a motobike taxi`,
-    type: `taxi`,
-    price: 10,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Business class seat`,
-    type: `flight`,
-    price: 500,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: ` Choose a seat`,
-    type: `flight`,
-    price: 10,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Extra luggage`,
-    type: `flight`,
-    price: 50,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Business class seat`,
-    type: `train`,
-    price: 30,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: `Add a meal`,
-    type: `train`,
-    price: 20,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Using train media system`,
-    type: `train`,
-    price: 2,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Choose a seat`,
     type: `bus`,
-    price: 3,
-    currency: CURRENCY,
-    priority: true
+    offers: [
+      {
+        title: `Infotainment system`,
+        price: 50
+      },
+      {
+        title: `Order meal`,
+        price: 40
+      },
+      {
+        title: `Choose seats`,
+        price: 50
+      }
+    ]
   },
   {
-    name: `Add a luggage`,
-    type: `bus`,
-    price: 20,
-    currency: CURRENCY,
-    priority: false
+    type: `train`,
+    offers: [
+      {
+        title: `Book a taxi at the arrival point`,
+        price: 60
+      },
+      {
+        title: `Order a breakfast`,
+        price: 120
+      },
+      {
+        title: `Wake up at a certain time`,
+        price: 100
+      }
+    ]
   },
   {
-    name: `Using bus media system`,
-    type: `bus`,
-    price: 2,
-    currency: CURRENCY,
-    priority: false
+    type: `flight`,
+    offers: [
+      {
+        title: `Choose meal`,
+        price: 170
+      },
+      {
+        title: `Choose seats`,
+        price: 30
+      },
+      {
+        title: `Upgrade to comfort class`,
+        price: 190
+      },
+      {
+        title: `Upgrade to business class`,
+        price: 40
+      },
+      {
+        title: `Add luggage`,
+        price: 180
+      },
+      {
+        title: `Business lounge`,
+        price: 60
+      }
+    ]
   },
   {
-    name: `Speed boat`,
-    type: `ship`,
-    price: 50,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: `Ferry`,
-    type: `ship`,
-    price: 20,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Add a meal`,
-    type: `ship`,
-    price: 30,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Ride a hourse`,
-    type: `transport`,
-    price: 50,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: `Reserve riksha`,
-    type: `transport`,
-    price: 20,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Rent a tuk-tuk`,
-    type: `transport`,
-    price: 5,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Business class vehicle`,
-    type: `drive`,
-    price: 50,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: `Standard class vehicle`,
-    type: `drive`,
-    price: 30,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Rent a bus`,
-    type: `drive`,
-    price: 200,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Early check in`,
     type: `check-in`,
-    price: 10,
-    currency: CURRENCY,
-    priority: true
+    offers: [
+      {
+        title: `Choose the time of check-in`,
+        price: 60
+      },
+      {
+        title: `Choose the time of check-out`,
+        price: 190
+      },
+      {
+        title: `Add breakfast`,
+        price: 170
+      },
+      {
+        title: `Laundry`,
+        price: 150
+      },
+      {
+        title: `Order a meal from the restaurant`,
+        price: 80
+      }
+    ]
   },
   {
-    name: `Late check out`,
-    type: `check-in`,
-    price: 10,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Add an extra-bed`,
-    type: `check-in`,
-    price: 25,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Private tour`,
     type: `sightseeing`,
-    price: 50,
-    currency: CURRENCY,
-    priority: true
+    offers: []
   },
   {
-    name: `Choose a tour language`,
-    type: `sightseeing`,
-    price: 10,
-    currency: CURRENCY,
-    priority: false
+    type: `ship`,
+    offers: [
+      {
+        title: `Choose meal`,
+        price: 40
+      },
+      {
+        title: `Choose seats`,
+        price: 60
+      },
+      {
+        title: `Upgrade to comfort class`,
+        price: 120
+      },
+      {
+        title: `Upgrade to business class`,
+        price: 190
+      },
+      {
+        title: `Add luggage`,
+        price: 180
+      },
+      {
+        title: `Business lounge`,
+        price: 180
+      }
+    ]
   },
   {
-    name: `Half day tour`,
-    type: `sightseeing`,
-    price: 25,
-    currency: CURRENCY,
-    priority: false
+    type: `transport`,
+    offers: []
   },
   {
-    name: `Local cuisine dishes`,
+    type: `drive`,
+    offers: [
+      {
+        title: `Choose comfort class`,
+        price: 110
+      },
+      {
+        title: `Choose business class`,
+        price: 110
+      }
+    ]
+  },
+  {
     type: `restaurant`,
-    price: 50,
-    currency: CURRENCY,
-    priority: true
-  },
-  {
-    name: `Reserve a table`,
-    type: `restaurant`,
-    price: 10,
-    currency: CURRENCY,
-    priority: false
-  },
-  {
-    name: `Unlimited beer`,
-    type: `restaurant`,
-    price: 25,
-    currency: CURRENCY,
-    priority: false
+    offers: [
+      {
+        title: `Choose live music`,
+        price: 140
+      },
+      {
+        title: `Choose VIP area`,
+        price: 80
+      }
+    ]
   }
 ];

@@ -8,11 +8,25 @@ import TripController from './controllers/tripController';
 import PointModel from './models/points';
 import FilterController from './controllers/filterController';
 import TripBoard from './components/tripBoard';
+import {AUTHORIZATION, END_POINT} from './config';
+import API from './api';
 
-
+const model = new PointModel();
 const points = generatePoints(5);
+model.setPoints(points);
+const api = new API(END_POINT, AUTHORIZATION);
 
-const model = new PointModel(points);
+
+
+api.getPoints()
+  .then((items) => {
+    console.log(items);
+  });
+
+api.getDestinations().then(api.getOffers());
+
+
+
 const btnNew = document.querySelector(`.trip-main__event-add-btn`);
 const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);

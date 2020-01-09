@@ -12,7 +12,7 @@ const getRandomType = (types) => {
 
 const getRandomOptions = (type, options) => {
   const randomInt = getRandomInt(0, 4);
-  const randomOptions = options.filter((item) => type.name === item.type).slice(0, getRandomInt(1, randomInt));
+  const randomOptions = options.find((item) => type.name === item.type).offers.slice(0, getRandomInt(1, randomInt));
   return randomOptions;
 };
 

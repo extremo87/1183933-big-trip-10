@@ -199,14 +199,17 @@ export default class Form extends SmartComponent {
 
   renderOption(option, currentEvent) {
 
-    const availableOptions = currentEvent.options.map((item) => item.name);
-    const isChecked = (availableOptions.includes(option.name)) ? `checked` : ``;
+    console.log(option,currentEvent);
+
+    const availableOptions = currentEvent.options.map((item) => item.title);
+
+    const isChecked = (availableOptions.includes(option.title)) ? `checked` : ``;
 
     return (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-l${option.name}-1" type="checkbox" name="event-offer-${option.name}" ${isChecked}>
-          <label class="event__offer-label" for="event-offer-${option.name}-1">
-            <span class="event__offer-title">${option.name}</span>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-l${option.title}-1" type="checkbox" name="event-offer-${option.title}" ${isChecked}>
+          <label class="event__offer-label" for="event-offer-${option.title}-1">
+            <span class="event__offer-title">${option.title}</span>
             &plus;
             ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${option.price}</span>
           </label>
@@ -301,7 +304,7 @@ export default class Form extends SmartComponent {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${Options.filter((option) => option.type === this._type.name).map((option) => this.renderOption(option, this._event)).join(`\n`)}
+              ${Options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option, this._event)).join(`\n`)}
             </div>
           </section>
 
@@ -311,7 +314,7 @@ export default class Form extends SmartComponent {
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-              ${cityImages.map((image) => `<img class="event__photo" src="${image}" alt="Event photo">`)}   
+              ${cityImages.map((image) => `<img class="event__photo" src="${image.src}" alt="${image.description}">`)}   
               </div>
             </div>
           </section>
