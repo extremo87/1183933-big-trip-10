@@ -2,7 +2,6 @@ import Form from '../components/editEvent';
 import Event from '../components/event';
 import {render, RenderPosition, replaceWith, replace, remove} from '../utils';
 import {Types} from '../mocks/data/types';
-import {getCities} from '../mocks/city';
 import {Activities} from '../mocks/data/activities';
 import moment from 'moment';
 import {CURRENCY} from '../config';
@@ -19,7 +18,7 @@ export const EmptyPoint = {
   city: {
     name: ``,
     description: ``,
-    images: []
+    pictures: []
   },
   type: Types[0],
   options: [],
@@ -42,6 +41,8 @@ export default class EventController {
     this._onViewChange = onViewChange;
     this._currentEvent = null;
     this._rerenderEvents = rerenderEvents;
+    this._cities = [];
+    this._options = [];
   }
 
   setDefaultView() {
@@ -83,11 +84,10 @@ export default class EventController {
 
     this._mode = mode;
     this._currentEvent = event;
-
     const oldEventForm = this._eventForm;
     const oldEventCard = this._eventCard;
     this._eventCard = new Event(event);
-    this._eventForm = new Form(event);
+    this._eventForm = new Form(event, this._cities, this._options);
 
     this._eventCard.setShowButtonHandler(() => {
       this._onViewChange();
@@ -115,7 +115,7 @@ export default class EventController {
     });
 
     this._eventForm.setOnSelectChange((evt) => {
-      this._eventForm._city = getCities().find((x) => x.name === evt.target.value);
+      this._eventForm._city = this._cities.find((x) => x.name === evt.target.value);
     });
 
     this._eventForm.setStartTimeHandler((evt) => {
@@ -151,5 +151,13 @@ export default class EventController {
         render(this._container.getEventsContainer(), this._eventForm.getElement(), RenderPosition.AFTERBEGIN);
         break;
     }
+  }
+
+  setCities(cities) {
+    this._cities = cities;
+  }
+
+  setOptions(options) {
+    this._options = options;
   }
 }

@@ -28,6 +28,9 @@ export default class TripController {
     this._model.setFilterChangeHandler(this._onFilterChange);
     this._sort.setOnClickHandler(this._sortHandler);
     this._currentSortType = this._sort.sortTypes().DEFAULT;
+
+    this._cities = [];
+    this._options = [];
   }
 
   _onDataChange(controller, oldObject, newObject) {
@@ -62,6 +65,8 @@ export default class TripController {
       render(this._tripDays.getElement(), this._createForm.getElement(), RenderPosition.AFTERBEGIN);
     }
     const createForm = new EventController(this._createForm, this._onDataChange, this._onViewChange, this.rerenderEvents);
+    createForm.setCities(this._cities);
+    createForm.setOptions(this._options);
     createForm.render(EmptyPoint, ControllerMode.ADD);
     this._renderedControllers = [].concat(createForm, this._renderedControllers);
   }
@@ -104,6 +109,8 @@ export default class TripController {
     render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
     this._renderedControllers = points.map((point) => {
       const event = new EventController(day, this._onDataChange, this._onViewChange, this.rerenderEvents);
+      event.setCities(this._cities);
+      event.setOptions(this._options);
       event.render(point, ControllerMode.DEFAULT);
       return event;
     });
@@ -123,6 +130,8 @@ export default class TripController {
     daysElements.map((element) => {
       element.points.map((point) => {
         const event = new EventController(element, this._onDataChange, this._onViewChange, this.rerenderEvents);
+        event.setCities(this._cities);
+        event.setOptions(this._options);
         event.render(point, ControllerMode.DEFAULT);
         this._renderedControllers.push(event);
       });
@@ -150,6 +159,14 @@ export default class TripController {
 
   show() {
     this._container.show();
+  }
+
+  setCities(cities) {
+    this._cities = cities;
+  }
+
+  setOptions(options) {
+    this._options = options;
   }
 
 }

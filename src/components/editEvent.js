@@ -1,7 +1,5 @@
-import {getCities} from '../mocks/city';
 import {Types} from '../mocks/data/types';
 import {CURRENCY_SIGN, CURRENCY} from '../config';
-import {Options} from '../mocks/data/options';
 import {Activities} from '../mocks/data/activities';
 import SmartComponent from './smartComponent';
 import flatpickr from 'flatpickr';
@@ -13,7 +11,7 @@ import he from 'he';
 
 export default class Form extends SmartComponent {
 
-  constructor(event) {
+  constructor(event, cities, options) {
     super();
     this._event = event;
     this._name = event.name;
@@ -24,6 +22,9 @@ export default class Form extends SmartComponent {
     this._flatpickrStart = null;
     this._flatpickrFinish = null;
 
+    this._cities = cities;
+    this._options = options;
+
     this._selectTypeHandler = null;
     this._collapseHandler = null;
     this._selectCityHandler = null;
@@ -31,7 +32,6 @@ export default class Form extends SmartComponent {
     this._formHandler = null;
     this._applyFlatpickr();
     // this.recoveryListeners();
-
   }
 
   rerender() {
@@ -163,11 +163,10 @@ export default class Form extends SmartComponent {
     const formDuration = calculateDuration(formStartTime, formFinishTime);
     const formDurationMs = calculateDurationMs(formStartTime, formFinishTime);
     const formPrice = he.encode(formData.get(`event-price`));
-    const cities = getCities();
-    const formCity = cities.find((city) => city.name === formName);
+    const formCity = this._cities.find((city) => city.name === formName);
     const formType = this._type;
     const formOptions = [];
-    Options.map((option) => {
+    this._options.map((option) => {
       if (formData.has(`event-offer-${option.name}`)) {
         formOptions.push(option);
       }
@@ -199,8 +198,6 @@ export default class Form extends SmartComponent {
 
   renderOption(option, currentEvent) {
 
-    console.log(option, currentEvent);
-
     const availableOptions = currentEvent.options.map((item) => item.title);
 
     const isChecked = (availableOptions.includes(option.title)) ? `checked` : ``;
@@ -217,13 +214,16 @@ export default class Form extends SmartComponent {
     `);
   }
 
+  renderImage(image) {
+    return (`<img class="event__photo" src="${image.src}" alt="${image.description}">`);
+  }
+
   renderForm() {
     const {price, favorite, id} = this._event;
     const cityName = this._city === undefined ? `` : this._city.name;
     const cityDescription = this._city === undefined ? `` : this._city.description;
     const cityImages = this._city === undefined ? [] : this._city.pictures;
 
-    const cities = getCities();
     return (`
         <li class="trip-events__item"><form class="event  event--edit" action="#" method="post">
         <input class="some-hidden" name="type-event" type="hidden" value="${this._type.name}">
@@ -257,7 +257,7 @@ export default class Form extends SmartComponent {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${cityName}" list="destination-list-1">
             <datalist id="destination-list-1">
-              ${cities.map((item) => `<option value="${item.name}"></option>`)}
+              ${this._cities.map((item) => `<option value="${item.name}"></option>`)}
             </datalist>
           </div>
 
@@ -304,7 +304,7 @@ export default class Form extends SmartComponent {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${Options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option, this._event)).join(`\n`)}
+              ${this._options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option, this._event)).join(`\n`)}
             </div>
           </section>
 
@@ -314,7 +314,7 @@ export default class Form extends SmartComponent {
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-              ${cityImages.map((image) => `<img class="event__photo" src="${image.src}" alt="${image.description}">`)}   
+              ${cityImages.map((image) => this.renderImage(image)).join(`\n`)}   
               </div>
             </div>
           </section>

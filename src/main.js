@@ -1,5 +1,4 @@
-import {generatePoints, getTotalPrice} from './mocks/point';
-import {render, RenderPosition} from './utils';
+import {render, RenderPosition, getTotalPrice} from './utils';
 import Menu, {MenuItem} from './components/menu';
 import Total from './components/total';
 import TripRoute from './components/tripRoute';
@@ -13,18 +12,12 @@ import API from './api';
 
 const model = new PointModel();
 const api = new API(END_POINT, AUTHORIZATION);
-
-api.getDestinations().then(api.getOffers());
-
-
 const btnNew = document.querySelector(`.trip-main__event-add-btn`);
 const [menuTitle, filterTitle] = document.querySelector(`.trip-controls`).children;
 const trip = document.querySelector(`.trip-info`);
 const body = document.querySelector(`.page-body_main`);
 const trips = document.querySelector(`.trip-events`);
 const tripBoard = new TripBoard();
-
-
 const appMenu = new Menu();
 
 render(menuTitle, appMenu.getElement(), RenderPosition.AFTERNODE);
@@ -51,20 +44,23 @@ btnNew.addEventListener(`click`, () => {
   controller.createPoint();
 });
 
-api.getPoints()
-  .then((items) => {
-    model.setPoints(items);
-    if (items.length === 0) {
+Promise.all([
+  api.getPoints(),
+  api.getOffers(),
+  api.getDestinations()
+]).then((res) => {
+  const points = res[0];
+  controller.setOptions(res[1]);
+  controller.setCities(res[2]);
+  model.setPoints(points);
 
-      render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
-      render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
-
-    } else {
-      const total = getTotalPrice(items);
-
-      render(trip, new TripRoute(items).getElement(), RenderPosition.BEFOREEND);
-      render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
-
-      controller.renderLayout();
-    }
-  });
+  if (points[0].length === 0) {
+    render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
+    render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
+  } else {
+    const total = getTotalPrice(points);
+    render(trip, new TripRoute(points).getElement(), RenderPosition.BEFOREEND);
+    render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
+    controller.renderLayout();
+  }
+});

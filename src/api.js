@@ -29,14 +29,12 @@ const API = class {
 
   getDestinations() {
     return this._load({url: `destinations`})
-      .then((response) => response.json())
-      .then((destinations) => console.log(destinations));
+      .then((response) => response.json());
   }
 
   getOffers() {
     return this._load({url: `offers`})
-      .then((response) => response.json())
-      .then((offers) => console.log(offers));
+      .then((response) => response.json());
   }
 
   createTask(task) {
