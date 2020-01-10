@@ -12,19 +12,9 @@ import {AUTHORIZATION, END_POINT} from './config';
 import API from './api';
 
 const model = new PointModel();
-const points = generatePoints(5);
-model.setPoints(points);
 const api = new API(END_POINT, AUTHORIZATION);
 
-
-
-api.getPoints()
-  .then((items) => {
-    console.log(items);
-  });
-
 api.getDestinations().then(api.getOffers());
-
 
 
 const btnNew = document.querySelector(`.trip-main__event-add-btn`);
@@ -43,22 +33,7 @@ render(body, tripBoard.getElement(), RenderPosition.BEFOREEND);
 const filterController = new FilterController(filterTitle, model);
 filterController.render();
 
-const controller = new TripController(tripBoard, model);
-
-if (points.length === 0) {
-
-  render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
-  render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
-
-} else {
-  const total = getTotalPrice(points);
-
-  render(trip, new TripRoute(points).getElement(), RenderPosition.BEFOREEND);
-  render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
-
-  controller.renderLayout();
-}
-
+const controller = new TripController(tripBoard, model, api);
 
 appMenu.setOnClick((item) => {
   switch (item) {
@@ -75,3 +50,21 @@ btnNew.addEventListener(`click`, () => {
   controller.show();
   controller.createPoint();
 });
+
+api.getPoints()
+  .then((items) => {
+    model.setPoints(items);
+    if (items.length === 0) {
+
+      render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
+      render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
+
+    } else {
+      const total = getTotalPrice(items);
+
+      render(trip, new TripRoute(items).getElement(), RenderPosition.BEFOREEND);
+      render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
+
+      controller.renderLayout();
+    }
+  });

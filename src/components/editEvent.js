@@ -199,7 +199,7 @@ export default class Form extends SmartComponent {
 
   renderOption(option, currentEvent) {
 
-    console.log(option,currentEvent);
+    console.log(option, currentEvent);
 
     const availableOptions = currentEvent.options.map((item) => item.title);
 
@@ -221,7 +221,7 @@ export default class Form extends SmartComponent {
     const {price, favorite, id} = this._event;
     const cityName = this._city === undefined ? `` : this._city.name;
     const cityDescription = this._city === undefined ? `` : this._city.description;
-    const cityImages = this._city === undefined ? [] : this._city.images;
+    const cityImages = this._city === undefined ? [] : this._city.pictures;
 
     const cities = getCities();
     return (`

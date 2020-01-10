@@ -4,11 +4,13 @@ import TripDays from '../components/tripDays';
 import {render, RenderPosition, generateDays} from '../utils';
 import EventController, {Mode as ControllerMode, EmptyPoint} from './eventController';
 
+
 export default class TripController {
 
-  constructor(container, model) {
+  constructor(container, model, api) {
     this._container = container;
     this._model = model;
+    this._api = api;
 
     this._sort = new Sorting();
     this._tripDays = new TripDays();
