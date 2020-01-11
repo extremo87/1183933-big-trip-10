@@ -54,7 +54,7 @@ export default class TripController {
     } else {
       this._api.updatePoint(oldObject.id, newObject)
         .then((pointModel) => {
-          const isSuccess = this._model.updatePoint(oldObject.id, pointModel);        
+          const isSuccess = this._model.updatePoint(oldObject.id, pointModel);
           if (isSuccess) {
             controller.render(pointModel, ControllerMode.DEFAULT);
             this._updatePoints();
