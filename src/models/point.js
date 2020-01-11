@@ -47,15 +47,16 @@ export default class Point {
   }
 
   toRAW() {
+    const type = this.type.name;
     return {
       'id': this.id,
-      'description': this.description,
-      'due_date': this.dueDate ? this.dueDate.toISOString() : null,
-      'tags': Array.from(this.tags),
-      'repeating_days': this.repeatingDays,
-      'color': this.color,
-      'is_favorite': this.isFavorite,
-      'is_archived': this.isArchive,
+      'type': type,
+      'date_from': this.startTime,
+      'date_to': this.finishTime,
+      'destination': this.city,
+      'base_price': Number(this.price),
+      'is_favorite': this.favorite,
+      'offers': this.options,
     };
   }
 

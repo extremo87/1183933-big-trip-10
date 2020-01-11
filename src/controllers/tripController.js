@@ -52,10 +52,17 @@ export default class TripController {
       this._model.removePoint(oldObject.id);
       this._updatePoints();
     } else {
-      const isSuccess = this._model.updatePoint(oldObject.id, newObject);
-      if (isSuccess) {
-        controller.render(newObject, ControllerMode.DEFAULT);
-      }
+      this._api.updatePoint(oldObject.id, newObject)
+        .then((pointModel) => {
+          const isSuccess = this._model.updatePoint(oldObject.id, pointModel);        
+          if (isSuccess) {
+            controller.render(pointModel, ControllerMode.DEFAULT);
+            this._updatePoints();
+          }
+        })
+        .catch(() => {
+          // test
+        });
     }
   }
 

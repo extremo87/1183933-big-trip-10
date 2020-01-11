@@ -5,6 +5,7 @@ import {Types} from '../mocks/data/types';
 import {Activities} from '../mocks/data/activities';
 import moment from 'moment';
 import {CURRENCY} from '../config';
+import Point from '../models/point';
 
 
 export const Mode = {
@@ -102,7 +103,9 @@ export default class EventController {
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {favorite: !event.favorite}));
+      const newPoint = Point.clone(event);
+      newPoint.favorite = !newPoint.favorite;
+      this._onDataChange(this, event, newPoint);
     });
 
     this._eventForm.setDeleteButtonHandler(() => {

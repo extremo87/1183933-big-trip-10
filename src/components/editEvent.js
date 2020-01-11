@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {Types} from '../mocks/data/types';
 import {CURRENCY_SIGN, CURRENCY} from '../config';
 import {Activities} from '../mocks/data/activities';
@@ -7,6 +8,7 @@ import 'flatpickr/dist/themes/light.css';
 import {calculateDuration, calculateDurationMs} from '../utils';
 import moment from 'moment';
 import he from 'he';
+import Adapter from '../models/point.js';
 
 
 export default class Form extends SmartComponent {
@@ -121,7 +123,6 @@ export default class Form extends SmartComponent {
       defaultDate: this._startTime.valueOf(),
       maxDate: this._finishTime.valueOf(),
       enableTime: true,
-      // eslint-disable-next-line camelcase
       time_24hr: true,
     });
 
@@ -129,7 +130,6 @@ export default class Form extends SmartComponent {
       dateFormat: `d/m/Y H:i`,
       defaultDate: this._finishTime.valueOf(),
       enableTime: true,
-      // eslint-disable-next-line camelcase
       time_24hr: true,
       minDate: this._startTime.valueOf(),
     });
@@ -164,30 +164,32 @@ export default class Form extends SmartComponent {
     const formDurationMs = calculateDurationMs(formStartTime, formFinishTime);
     const formPrice = he.encode(formData.get(`event-price`));
     const formCity = this._cities.find((city) => city.name === formName);
-    const formType = this._type;
+    const formType = this._type.name;
     const formOptions = [];
-    this._options.map((option) => {
-      if (formData.has(`event-offer-${option.name}`)) {
+    const currentOptions = this._options.find((item) => item.type === formType);
+
+    currentOptions.offers.map((option) => {
+      if (formData.has(`event-offer-${option.title}`)) {
         formOptions.push(option);
       }
     });
 
     const formId = formData.get(`event-id`) === `undefined` ? Math.random().toString(36).substr(2, 9) : formData.get(`event-id`);
 
-    return {
+    return new Adapter({
       id: formId,
       name: Activities.get(formType.name),
-      city: formCity,
+      destination: formCity,
       type: formType,
-      options: formOptions,
-      startTime: formStartTime,
-      finishTime: formFinishTime,
+      offers: formOptions,
+      date_from: formStartTime,
+      date_to: formFinishTime,
       duration: formDuration,
       durationInMs: formDurationMs,
-      price: formPrice,
+      base_price: formPrice,
       currency: CURRENCY,
-      favorite: formData.has(`event-favorite`),
-    };
+      is_favorite: formData.has(`event-favorite`),
+    });
   }
 
   getData() {
@@ -204,7 +206,7 @@ export default class Form extends SmartComponent {
 
     return (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-l${option.title}-1" type="checkbox" name="event-offer-${option.title}" ${isChecked}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.title}-1" type="checkbox" name="event-offer-${option.title}" ${isChecked}>
           <label class="event__offer-label" for="event-offer-${option.title}-1">
             <span class="event__offer-title">${option.title}</span>
             &plus;
