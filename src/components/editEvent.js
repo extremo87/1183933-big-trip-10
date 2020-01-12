@@ -10,7 +10,6 @@ import moment from 'moment';
 import he from 'he';
 import Adapter from '../models/point.js';
 
-
 const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
@@ -43,6 +42,8 @@ export default class Form extends SmartComponent {
     this._offerHandler = null;
     this._deleteHandler = null;
     this._applyFlatpickr();
+
+    this.hasErrors = false;
     // this.recoveryListeners();
   }
 
@@ -58,6 +59,11 @@ export default class Form extends SmartComponent {
             <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${type.name}</label>
         </div>
     `);
+  }
+
+  setError(value) {
+    console.log(value);
+    this.hasErrors = value;
   }
 
   setSubmitHandler(handler) {
@@ -264,7 +270,7 @@ export default class Form extends SmartComponent {
     const {deleteButtonText, saveButtonText} = this._externalData;
 
     return (`
-        <li class="trip-events__item"><form class="event  event--edit" action="#" method="post">
+        <li class="trip-events__item"><form class="event  event--edit ${this.hasErrors ? `error` : ``}" action="#" method="post">
         <input class="some-hidden" name="type-event" type="hidden" value="${this._type.name}">
         <input class="some-hidden" name="event-id" type="hidden" value="${id}">
         <header class="event__header">

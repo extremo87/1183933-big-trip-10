@@ -110,6 +110,9 @@ export default class EventController {
     });
 
     this._eventForm.setDeleteButtonHandler(() => {
+      this._eventForm.setData({
+        deleteButtonText: `Deleting...`,
+      });
       this._onDataChange(this, event, null);
     });
 
@@ -147,6 +150,8 @@ export default class EventController {
     });
 
     this._eventForm.setSubmitHandler(() => {
+      this._eventForm.setError(0);
+      console.log(`clear erroes`)
       this._eventForm.setData({
         saveButtonText: `Saving...`,
       });
@@ -186,16 +191,17 @@ export default class EventController {
   shake() {
     this._eventForm.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
     this._eventCard.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    //this._eventForm.getElement().classList.add(`error`);
+    this._eventForm.setError(true);
   
     setTimeout(() => {
       this._eventForm.getElement().style.animation = ``;
       this._eventCard.getElement().style.animation = ``;
-  
       this._eventForm.setData({
         saveButtonText: `Save`,
         deleteButtonText: `Delete`,
       });
+      
     }, SHAKE_ANIMATION_TIMEOUT);
   }
- 
 }

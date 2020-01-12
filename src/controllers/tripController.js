@@ -58,7 +58,6 @@ export default class TripController {
         this._updatePoints();
       })
       .catch((error) => {
-        console.log(error);
         controller.shake();
       });
     } else {
