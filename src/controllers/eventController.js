@@ -197,8 +197,8 @@ export default class EventController {
       this._eventForm.unlock();
       this._eventForm.setData({
         saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
-      });     
+        deleteButtonText: `Delete`
+      });
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

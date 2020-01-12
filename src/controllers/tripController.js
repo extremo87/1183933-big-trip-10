@@ -57,7 +57,7 @@ export default class TripController {
         this._model.removePoint(oldObject.id);
         this._updatePoints();
       })
-      .catch((error) => {
+      .catch(() => {
         controller.shake();
       });
     } else {
