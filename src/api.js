@@ -37,7 +37,7 @@ const API = class {
       .then((response) => response.json());
   }
 
-  createTask(task) {
+  createPoint(task) {
     return this._load({
       url: `points`,
       method: Method.POST,
@@ -59,7 +59,7 @@ const API = class {
       .then(Point.parsePoint);
   }
 
-  deleteTask(id) {
+  deletePoint(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
