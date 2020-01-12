@@ -44,6 +44,7 @@ export default class Form extends SmartComponent {
     this._applyFlatpickr();
 
     this.hasErrors = false;
+    this.isBlocked = false;
     // this.recoveryListeners();
   }
 
@@ -62,8 +63,15 @@ export default class Form extends SmartComponent {
   }
 
   setError(value) {
-    console.log(value);
     this.hasErrors = value;
+  }
+
+  lock() {
+    this.isBlocked = true;
+  }
+
+  unlock() {
+    this.isBlocked = false;
   }
 
   setSubmitHandler(handler) {
@@ -327,7 +335,7 @@ export default class Form extends SmartComponent {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this.price}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${this.isBlocked ? `disabled` : ``}>${saveButtonText}</button>
           <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${ favorite ? `checked` : ``}>
