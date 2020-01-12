@@ -48,8 +48,7 @@ export default class TripController {
           this._renderedControllers = [].concat(controller, this._renderedControllers);
           this._updatePoints();
         }).catch(() => {
-        // controller.shake();
-        // test
+          controller.shake();
         });
       }
     } else if (newObject === null) {
@@ -58,9 +57,9 @@ export default class TripController {
         this._model.removePoint(oldObject.id);
         this._updatePoints();
       })
-      .catch(() => {
-        // controller.shake();
-        // test
+      .catch((error) => {
+        console.log(error);
+        controller.shake();
       });
     } else {
       this._api.updatePoint(oldObject.id, newObject)
@@ -72,7 +71,7 @@ export default class TripController {
           }
         })
         .catch(() => {
-          // test
+          controller.shake();
         });
     }
   }

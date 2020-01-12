@@ -11,6 +11,11 @@ import he from 'he';
 import Adapter from '../models/point.js';
 
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
+
 export default class Form extends SmartComponent {
 
   constructor(event, cities, options) {
@@ -23,15 +28,20 @@ export default class Form extends SmartComponent {
     this._finishTime = event.finishTime;
     this._flatpickrStart = null;
     this._flatpickrFinish = null;
-
+    this._externalData = DefaultData;
     this._cities = cities;
     this._options = options;
+    this.price = this._event.price;
+    this.offers = event.options;
 
     this._selectTypeHandler = null;
     this._collapseHandler = null;
     this._selectCityHandler = null;
     this._favouriteHandler = null;
     this._formHandler = null;
+    this._priceHandler = null;
+    this._offerHandler = null;
+    this._deleteHandler = null;
     this._applyFlatpickr();
     // this.recoveryListeners();
   }
@@ -66,6 +76,7 @@ export default class Form extends SmartComponent {
   }
 
   setDeleteButtonHandler(handler) {
+    this._deleteHandler = handler;
     this.setClickHandler(`.event__reset-btn`, handler);
   }
 
@@ -85,6 +96,15 @@ export default class Form extends SmartComponent {
     });
   }
 
+  setPriceHandler(handler) {
+    this._priceHandler = handler;
+    const element = this.getElement().querySelector(`.event__input--price`);
+    element.addEventListener(`change`, (evt) => {
+      handler(evt);
+      this.rerender();
+    });
+  }
+
   selectTypeHandler(handler) {
     this._selectTypeHandler = handler;
     const radioButtons = this.getElement().querySelectorAll(`.event__type-input`);
@@ -94,8 +114,21 @@ export default class Form extends SmartComponent {
         this.rerender();
       });
     });
-
   }
+
+  setOfferHandler(handler) {
+    this._offerHandler = handler;
+    const offers = this.getElement().querySelectorAll(`.event__offer-checkbox`);
+    if (offers) {
+      offers.forEach((offer) => {
+        offer.addEventListener(`change`, (evt) => {
+          handler(evt);
+          this.rerender();
+        });
+      });
+    }
+  }
+
 
   setOnSelectChange(handler) {
     this._selectCityHandler = handler;
@@ -153,6 +186,9 @@ export default class Form extends SmartComponent {
     this.setCollapseHandler(this._collapseHandler);
     this.setOnSelectChange(this._selectCityHandler);
     this.selectTypeHandler(this._selectTypeHandler);
+    this.setPriceHandler(this._priceHandler);
+    this.setOfferHandler(this._offerHandler);
+    this.setDeleteButtonHandler(this._deleteHandler);
   }
 
   parseFormData(formData) {
@@ -198,15 +234,15 @@ export default class Form extends SmartComponent {
     return this.parseFormData(formData);
   }
 
-  renderOption(option, currentEvent) {
+  renderOption(option) {
 
-    const availableOptions = currentEvent.options.map((item) => item.title);
+    const availableOptions = this.offers.map((item) => item.title);
 
     const isChecked = (availableOptions.includes(option.title)) ? `checked` : ``;
 
     return (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.title}-1" type="checkbox" name="event-offer-${option.title}" ${isChecked}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.title}-1" type="checkbox" data-name="${option.title}" name="event-offer-${option.title}" ${isChecked}>
           <label class="event__offer-label" for="event-offer-${option.title}-1">
             <span class="event__offer-title">${option.title}</span>
             &plus;
@@ -221,10 +257,11 @@ export default class Form extends SmartComponent {
   }
 
   renderForm() {
-    const {price, favorite, id} = this._event;
+    const {favorite, id} = this._event;
     const cityName = this._city === undefined ? `` : this._city.name;
     const cityDescription = this._city === undefined ? `` : this._city.description;
     const cityImages = this._city === undefined ? [] : this._city.pictures;
+    const {deleteButtonText, saveButtonText} = this._externalData;
 
     return (`
         <li class="trip-events__item"><form class="event  event--edit" action="#" method="post">
@@ -281,11 +318,11 @@ export default class Form extends SmartComponent {
               ${CURRENCY_SIGN}
             </label>
             <!-- TODO: calculate total sum according to options -->
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this.price}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+          <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${ favorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
@@ -306,7 +343,7 @@ export default class Form extends SmartComponent {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${this._options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option, this._event)).join(`\n`)}
+              ${this._options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option)).join(`\n`)}
             </div>
           </section>
 
@@ -324,6 +361,11 @@ export default class Form extends SmartComponent {
       </form>
       </li>
     `);
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
   }
 
 
