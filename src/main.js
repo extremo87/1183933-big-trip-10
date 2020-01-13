@@ -1,9 +1,9 @@
-import {render, RenderPosition, getTotalPrice} from './utils';
+import {render, RenderPosition} from './utils';
 import Menu, {MenuItem} from './components/menu';
-import Total from './components/total';
-import TripRoute from './components/tripRoute';
 import NoPoints from './components/noPoints';
 import TripController from './controllers/tripController';
+import TripDetailsController from './controllers/tripDetailsController';
+import TotalController from './controllers/totalController';
 import PointModel from './models/points';
 import FilterController from './controllers/filterController';
 import TripBoard from './components/tripBoard';
@@ -27,6 +27,8 @@ const filterController = new FilterController(filterTitle, model);
 filterController.render();
 
 const controller = new TripController(tripBoard, model, api);
+const detailsController = new TripDetailsController(trip, model);
+const totalController = new TotalController(trip, model);
 
 appMenu.setOnClick((item) => {
   switch (item) {
@@ -49,18 +51,17 @@ Promise.all([
   api.getOffers(),
   api.getDestinations()
 ]).then((res) => {
-  const points = res[0];
-  controller.setOptions(res[1]);
-  controller.setCities(res[2]);
+  const [points, options, cities] = res;
+  controller.setOptions(options);
+  controller.setCities(cities);
   model.setPoints(points);
 
   if (points[0].length === 0) {
-    render(trip, new Total(0).getElement(), RenderPosition.BEFOREEND);
+    totalController.render();
     render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
   } else {
-    const total = getTotalPrice(points);
-    render(trip, new TripRoute(points).getElement(), RenderPosition.BEFOREEND);
-    render(trip, new Total(total).getElement(), RenderPosition.BEFOREEND);
+    detailsController.render();
+    totalController.render();
     controller.renderLayout();
   }
 });
