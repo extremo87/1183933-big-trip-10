@@ -16,7 +16,7 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  name: ``,
+  name: Activities.get(Types[0].name),
   city: {
     name: ``,
     description: ``,

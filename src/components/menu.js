@@ -22,9 +22,18 @@ export default class Menu extends Component {
     }
   }
 
+  resetClasses() {
+    const items = document.querySelectorAll(`.trip-tabs__btn`);
+    [].forEach.call(items, (el) => {
+      el.classList.remove(`trip-tabs__btn--active`);
+    });
+  }
+
   setOnClick(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       const menuItem = evt.target.dataset.name;
+      this.resetClasses();
+      evt.target.classList.add(`trip-tabs__btn--active`);
       handler(menuItem);
     });
   }
