@@ -2,6 +2,8 @@ import SmartComponent from '../components/smartComponent';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {Types} from '../mocks/data/types';
+import {Activities} from '../mocks/data/activities';
+import {calculateDurationFromMs} from '../utils';
 
 const getSumByType = (type, points) => {
   let sum = 0;
@@ -19,6 +21,45 @@ const padding = {
     top: 0,
     bottom: 0
   }
+};
+
+const scalesConf = {
+  xAxes: [{
+    display: false,
+    ticks: {
+      beginAtZero: true,
+      fontSize: 20,
+    },
+    gridLines: {
+      display: false
+    },
+  }],
+  yAxes: [{
+    ticks: {
+      beginAtZero: true,
+      fontSize: 20
+    },
+    gridLines: {
+      display: false
+    },
+  }]
+};
+
+const legendConf = {
+  display: false
+};
+
+const datasetConf = (values, lab) => {
+  return [
+    {
+      label: lab,
+      backgroundColor: `#ffffff`,
+      fontColor: `#000000`,
+      fontSize: 16,
+      data: values,
+      barThickness: 40,
+    }
+  ];
 };
 
 const emojis = new Map().set(`ship`, String.fromCodePoint())
@@ -59,16 +100,7 @@ const renderMoneyChart = (element, points) => {
     fontSize: 16,
     data: {
       labels,
-      datasets: [
-        {
-          label: `Money spent`,
-          backgroundColor: `#ffffff`,
-          fontColor: `#000000`,
-          fontSize: 16,
-          data: values,
-          barThickness: 40,
-        }
-      ]
+      datasets: datasetConf(values, `Money spent`)
     },
     options: {
       layout: padding,
@@ -85,30 +117,8 @@ const renderMoneyChart = (element, points) => {
           }
         }
       },
-      scales: {
-        xAxes: [{
-          display: false,
-          ticks: {
-            beginAtZero: true,
-            fontSize: 20,
-          },
-          gridLines: {
-            display: false
-          },
-        }],
-        yAxes: [{
-          ticks: {
-            beginAtZero: true,
-            fontSize: 20
-          },
-          gridLines: {
-            display: false
-          },
-        }]
-      },
-      legend: {
-        display: false
-      },
+      scales: scalesConf,
+      legend: legendConf,
     }
   });
 };
@@ -143,16 +153,7 @@ const renderTransportChart = (element, points) => {
     fontSize: 16,
     data: {
       labels,
-      datasets: [
-        {
-          label: `Times`,
-          backgroundColor: `#ffffff`,
-          fontColor: `#000000`,
-          fontSize: 16,
-          data: values,
-          barThickness: 40,
-        }
-      ]
+      datasets: datasetConf(values, `Count`)
     },
     options: {
       layout: padding,
@@ -169,30 +170,55 @@ const renderTransportChart = (element, points) => {
           }
         }
       },
-      scales: {
-        xAxes: [{
-          display: false,
-          ticks: {
-            beginAtZero: true,
-            fontSize: 20,
-          },
-          gridLines: {
-            display: false
-          },
-        }],
-        yAxes: [{
-          ticks: {
-            beginAtZero: true,
-            fontSize: 20
-          },
-          gridLines: {
-            display: false
-          },
-        }]
+      scales: scalesConf,
+      legend: legendConf,
+    }
+  });
+};
+
+const renderTimeChart = (element, points) => {
+  points.sort((a, b) => b.durationInMs - a.durationInMs);
+  const labels = [];
+  const values = [];
+
+  points.map((point) => {
+    labels.push(`${Activities.get(point.type.name)} ${point.city.name} ${emojis.get(point.type.name)} `);
+    values.push(point.durationInMs);
+  });
+
+  return new Chart(element, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    label: `TIME SPENT`,
+    fontSize: 16,
+    data: {
+      labels,
+      datasets: datasetConf(values, `Time spent`)
+    },
+    options: {
+      layout: padding,
+      title: {
+        display: true,
+        text: `TIME SPENT`,
+        position: `left`,
+        fontSize: 20
       },
-      legend: {
-        display: false
+      plugins: {
+        datalabels: {
+          formatter(value) {
+            return calculateDurationFromMs(value);
+          }
+        }
       },
+      tooltips: {
+        callbacks: {
+            label: (value) => {
+               return calculateDurationFromMs(value);;
+            }
+        }
+    },
+      scales: scalesConf,
+      legend: legendConf,
     }
   });
 };
@@ -204,6 +230,7 @@ export default class Statistics extends SmartComponent {
     this._model = model;
     this._moneyChart = null;
     this._transportChart = null;
+    this._time = null;
     this._renderCharts();
   }
 
@@ -220,6 +247,11 @@ export default class Statistics extends SmartComponent {
             <canvas class="statistic__transport" width="550" height="220"></canvas>
           </div>
         </div>
+        <div class="statistic__line">
+        <div class="statistic">
+          <canvas class="statistic__time" width="550" height="400"></canvas>
+        </div>
+      </div>
       </section>`
     );
   }
@@ -240,10 +272,12 @@ export default class Statistics extends SmartComponent {
     const element = this.getElement();
     const moneyBlock = element.querySelector(`.statistic__money`);
     const transportBlock = element.querySelector(`.statistic__transport`);
+    const timeBlock = element.querySelector(`.statistic__time`);
     this._resetCharts();
 
     this._moneyChart = renderMoneyChart(moneyBlock, this._model.getPointsAll());
     this._transportChart = renderTransportChart(transportBlock, this._model.getPointsAll());
+    this._timeChart = renderTimeChart(timeBlock, this._model.getPointsAll());
   }
 
   _resetCharts() {
@@ -251,10 +285,13 @@ export default class Statistics extends SmartComponent {
       this._moneyChart.destroy();
       this._moneyChart = null;
     }
-
     if (this._transportChart) {
       this._transportChart.destroy();
       this._transportChart = null;
+    }
+    if (this._timeChart) {
+      this._timeChart.destroy();
+      this._timeChart = null;
     }
   }
 
