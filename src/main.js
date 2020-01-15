@@ -4,6 +4,7 @@ import NoPoints from './components/noPoints';
 import TripController from './controllers/tripController';
 import TripDetailsController from './controllers/tripDetailsController';
 import TotalController from './controllers/totalController';
+import Statistics from './components/statistics';
 import PointModel from './models/points';
 import FilterController from './controllers/filterController';
 import TripBoard from './components/tripBoard';
@@ -18,10 +19,13 @@ const trip = document.querySelector(`.trip-info`);
 const body = document.querySelector(`.page-body_main`);
 const trips = document.querySelector(`.trip-events`);
 const tripBoard = new TripBoard();
+const statistics = new Statistics(model);
 const appMenu = new Menu();
 
 render(menuTitle, appMenu.getElement(), RenderPosition.AFTERNODE);
 render(body, tripBoard.getElement(), RenderPosition.BEFOREEND);
+render(body, statistics.getElement(), RenderPosition.BEFOREEND);
+statistics.hide();
 
 const filterController = new FilterController(filterTitle, model);
 filterController.render();
@@ -34,8 +38,10 @@ appMenu.setOnClick((item) => {
   switch (item) {
     case MenuItem.STAT:
       controller.hide();
+      statistics.show();
       break;
     case MenuItem.TABLE:
+      statistics.hide();
       controller.show();
       break;
   }
