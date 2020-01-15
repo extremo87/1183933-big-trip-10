@@ -212,11 +212,11 @@ const renderTimeChart = (element, points) => {
       },
       tooltips: {
         callbacks: {
-            label: (value) => {
-               return calculateDurationFromMs(value);;
-            }
+          label: (value) => {
+            return calculateDurationFromMs(value);
+          }
         }
-    },
+      },
       scales: scalesConf,
       legend: legendConf,
     }
