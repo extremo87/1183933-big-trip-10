@@ -7,6 +7,7 @@ export default class Event extends Component {
     super();
     this._event = event;
     this._showBtnHandler = null;
+    this._shownOptions = null;
     this.recoveryListeners();
   }
 
@@ -19,9 +20,27 @@ export default class Event extends Component {
     this.setClickHandler(`.event__rollup-btn`, this._showBtnHandler);
   }
 
+  renderOption(option) {
+
+    if (this._shownOptions > 3) {
+      return ``;
+    } else {
+      this._shownOptions++;
+    }
+
+    return (`
+         <li class="event__offer">
+          <span class="event__offer-title">${option.title}</span>
+          &plus;
+          ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${option.price}</span>
+         </li>
+    `);
+  }
+
   getTemplate() {
     const {name, city, startTime, finishTime, duration, price, options, type} = this._event;
     const cityName = city === undefined ? `` : city.name;
+    this._shownOptions = 1;
 
     return (`<li class="trip-events__item">
     <div class="event">
@@ -45,11 +64,7 @@ export default class Event extends Component {
   
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${ options.length > 0 ? ` <li class="event__offer">
-          <span class="event__offer-title">${options[0].title}</span>
-          &plus;
-          ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${options[0].price}</span>
-         </li>` : ``}
+        ${ options.length > 0 ? options.map((option) => this.renderOption(option)).join(`\n`) : ``}
       </ul>
   
       <button class="event__rollup-btn" type="button">
