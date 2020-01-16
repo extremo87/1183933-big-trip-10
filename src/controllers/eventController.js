@@ -106,7 +106,7 @@ export default class EventController {
     this._eventForm.setFavouriteButtonHandler(() => {
       const newPoint = Point.clone(event);
       newPoint.favorite = !newPoint.favorite;
-      this._onDataChange(this, event, newPoint);
+      this._onDataChange(this, event, newPoint, false);
     });
 
     this._eventForm.setDeleteButtonHandler(() => {
