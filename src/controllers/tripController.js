@@ -33,7 +33,7 @@ export default class TripController {
     this._options = [];
   }
 
-  _onDataChange(controller, oldObject, newObject) {
+  _onDataChange(controller, oldObject, newObject, needRerender = true) {
     if (oldObject === EmptyPoint) {
       this._createForm = null;
       if (newObject === null) {
@@ -64,7 +64,7 @@ export default class TripController {
       this._api.updatePoint(oldObject.id, newObject)
         .then((pointModel) => {
           const isSuccess = this._model.updatePoint(oldObject.id, pointModel);
-          if (isSuccess) {
+          if (isSuccess && needRerender) {
             controller.render(pointModel, ControllerMode.DEFAULT);
             this._updatePoints();
           }
