@@ -9,11 +9,14 @@ import {calculateDuration, calculateDurationMs} from '../utils';
 import moment from 'moment';
 import he from 'he';
 import Adapter from '../models/point.js';
+import debounce from 'lodash/debounce';
 
 const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
+
+const TIMEOUT = 2000;
 
 export default class Form extends SmartComponent {
 
@@ -86,7 +89,7 @@ export default class Form extends SmartComponent {
 
   setFavouriteButtonHandler(handler) {
     this._favouriteHandler = handler;
-    this.setClickHandler(`.event__favorite-checkbox`, handler);
+    this.setClickHandler(`.event__favorite-checkbox`, debounce(handler, TIMEOUT));
   }
 
   setDeleteButtonHandler(handler) {
