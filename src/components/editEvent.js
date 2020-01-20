@@ -266,6 +266,17 @@ export default class Form extends SmartComponent {
     `);
   }
 
+  renderOptions(options) {
+    return (`
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option)).join(`\n`)}
+      </div>
+    </section>
+  `);
+  }
+
   renderImage(image) {
     return (`<img class="event__photo" src="${image.src}" alt="${image.description}">`);
   }
@@ -352,15 +363,7 @@ export default class Form extends SmartComponent {
         </header>
 
         <section class="event__details">
-
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-            <div class="event__available-offers">
-              ${this._options.find((option) => option.type === this._type.name).offers.map((option) => this.renderOption(option)).join(`\n`)}
-            </div>
-          </section>
-
+          ${(this._options.length !== 0) ? this.renderOptions(this._options) : ``} 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description"> ${cityDescription}</p>
