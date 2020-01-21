@@ -1,8 +1,8 @@
 import SmartComponent from '../components/smartComponent';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {Types} from '../mocks/data/types';
-import {Activities} from '../mocks/data/activities';
+import {TYPES} from '../mocks/data/types';
+import {ACTIVITIES} from '../mocks/data/activities';
 import {calculateDurationFromMs} from '../utils';
 
 const getSumByType = (type, points) => {
@@ -125,7 +125,7 @@ const renderMoneyChart = (element, points) => {
 
 
 const renderTransportChart = (element, points) => {
-  const transportTypes = Types.filter((item) => item.type === `transfer`).map((item) => item.name);
+  const transportTypes = TYPES.filter((item) => item.type === `transfer`).map((item) => item.name);
   const dataTransport = [];
   points.map((point) => {
     if (transportTypes.includes(point.type.name)) {
@@ -182,7 +182,7 @@ const renderTimeChart = (element, points) => {
   const values = [];
 
   points.map((point) => {
-    labels.push(`${Activities.get(point.type.name)} ${point.city.name} ${emojis.get(point.type.name)} `);
+    labels.push(`${ACTIVITIES.get(point.type.name)} ${point.city.name} ${emojis.get(point.type.name)} `);
     values.push(point.durationInMs);
   });
 

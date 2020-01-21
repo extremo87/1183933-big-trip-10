@@ -1,18 +1,7 @@
 import {CURRENCY} from '../config';
 import moment from 'moment';
 import {calculateDuration, calculateDurationMs} from '../utils';
-
-const Activities = new Map()
-.set(`taxi`, `Take a taxi`)
-.set(`bus`, `Bus journey`)
-.set(`train`, `Take a train`)
-.set(`flight`, `Flight to`)
-.set(`ship`, `Cruise`)
-.set(`transport`, `Take a riksha`)
-.set(`drive`, `Rent a car`)
-.set(`check-in`, `Check in`)
-.set(`sightseeing`, `See sightseeing`)
-.set(`restaurant`, `Reserve a table in restaurant`);
+import {ACTIVITIES} from '../mocks/data/activities';
 
 const Types = new Map()
 .set(`taxi`, `transfer`)
@@ -29,7 +18,7 @@ const Types = new Map()
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
-    this.name = Activities.get(data[`type`]);
+    this.name = ACTIVITIES.get(data[`type`]);
     this.type = {
       name: data[`type`],
       img: `${data[`type`]}.png`,

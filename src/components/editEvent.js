@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-import {Types} from '../mocks/data/types';
+import {TYPES} from '../mocks/data/types';
 import {CURRENCY_SIGN, CURRENCY} from '../config';
-import {Activities} from '../mocks/data/activities';
+import {ACTIVITIES} from '../mocks/data/activities';
 import SmartComponent from './smartComponent';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/light.css';
@@ -231,7 +231,7 @@ export default class Form extends SmartComponent {
 
     return new Adapter({
       id: formId,
-      name: Activities.get(formType.name),
+      name: ACTIVITIES.get(formType.name),
       destination: formCity,
       type: formType,
       offers: formOptions,
@@ -308,12 +308,12 @@ export default class Form extends SmartComponent {
               <!-- TODO: create 1 method to render both lists-->
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${Types.filter((item) => item.type === `transfer` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
+                ${TYPES.filter((item) => item.type === `transfer` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${Types.filter((item) => item.type === `activity` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
+                ${TYPES.filter((item) => item.type === `activity` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
             </div>
           </div>

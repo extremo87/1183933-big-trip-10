@@ -48,8 +48,6 @@ render(body, statistics.getElement(), RenderPosition.BEFOREEND);
 statistics.hide();
 
 const filterController = new FilterController(filterTitle, model);
-filterController.render();
-
 const controller = new TripController(tripBoard, model, apiWithProvider);
 const detailsController = new TripDetailsController(trip, model);
 const totalController = new TotalController(trip, model);
@@ -81,6 +79,7 @@ Promise.all([
   controller.setOptions(options);
   controller.setCities(cities);
   model.setPoints(points);
+  filterController.render();
   if (points[0].length === 0) {
     totalController.render();
     render(trips, new NoPoints().getElement(), RenderPosition.AFTERNODE);
