@@ -1,19 +1,24 @@
 /* eslint-disable camelcase */
-import {Types} from '../mocks/data/types';
-import {CURRENCY_SIGN, CURRENCY} from '../config';
-import {Activities} from '../mocks/data/activities';
-import SmartComponent from './smartComponent';
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/themes/light.css';
-import {calculateDuration, calculateDurationMs} from '../utils';
 import moment from 'moment';
 import he from 'he';
+import debounce from 'lodash/debounce';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/themes/light.css';
+
+import {TYPES} from '../mocks/data/types';
+import {CURRENCY_SIGN, CURRENCY} from '../config';
+import {ACTIVITIES} from '../mocks/data/activities';
+import SmartComponent from './smartComponent';
+import {calculateDuration, calculateDurationMs} from '../utils';
 import Adapter from '../models/point.js';
+
 
 const DefaultData = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
+
+const TIMEOUT = 2000;
 
 export default class Form extends SmartComponent {
 
@@ -45,7 +50,6 @@ export default class Form extends SmartComponent {
 
     this.hasErrors = false;
     this.isBlocked = false;
-    // this.recoveryListeners();
   }
 
   rerender() {
@@ -86,7 +90,7 @@ export default class Form extends SmartComponent {
 
   setFavouriteButtonHandler(handler) {
     this._favouriteHandler = handler;
-    this.setClickHandler(`.event__favorite-checkbox`, handler);
+    this.setClickHandler(`.event__favorite-checkbox`, debounce(handler, TIMEOUT));
   }
 
   setDeleteButtonHandler(handler) {
@@ -182,18 +186,6 @@ export default class Form extends SmartComponent {
     });
   }
 
-  getState() {
-    return {
-      type: this._type,
-      city: this._city,
-      name: this._name,
-      startTime: this._startTime,
-      finishTime: this._finishTime,
-      duration: calculateDuration(this._startTime, this._finishTime),
-      durationInMs: calculateDurationMs(this._startTime, this._finishTime)
-    };
-  }
-
   recoveryListeners() {
     this.setSubmitHandler(this._formHandler);
     this.setFavouriteButtonHandler(this._favouriteHandler);
@@ -228,7 +220,7 @@ export default class Form extends SmartComponent {
 
     return new Adapter({
       id: formId,
-      name: Activities.get(formType.name),
+      name: ACTIVITIES.get(formType.name),
       destination: formCity,
       type: formType,
       offers: formOptions,
@@ -302,15 +294,14 @@ export default class Form extends SmartComponent {
            
 
             <div class="event__type-list">
-              <!-- TODO: create 1 method to render both lists-->
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${Types.filter((item) => item.type === `transfer` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
+                ${TYPES.filter((item) => item.type === `transfer` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${Types.filter((item) => item.type === `activity` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
+                ${TYPES.filter((item) => item.type === `activity` && item.name !== this._type.name).map((item) => this.renderTypeItem(item))}
               </fieldset>
             </div>
           </div>
@@ -342,7 +333,6 @@ export default class Form extends SmartComponent {
               <span class="visually-hidden">Price</span>
               ${CURRENCY_SIGN}
             </label>
-            <!-- TODO: calculate total sum according to options -->
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this.price}">
           </div>
 

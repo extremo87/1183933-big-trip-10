@@ -1,9 +1,10 @@
+import moment from 'moment';
+
 import Form from '../components/editEvent';
 import Event from '../components/event';
 import {render, RenderPosition, replaceWith, replace, remove} from '../utils';
-import {Types} from '../mocks/data/types';
-import {Activities} from '../mocks/data/activities';
-import moment from 'moment';
+import {TYPES} from '../mocks/data/types';
+import {ACTIVITIES} from '../mocks/data/activities';
 import {CURRENCY} from '../config';
 import Point from '../models/point';
 
@@ -16,13 +17,13 @@ export const Mode = {
 };
 
 export const EmptyPoint = {
-  name: Activities.get(Types[0].name),
+  name: ACTIVITIES.get(TYPES[0].name),
   city: {
     name: ``,
     description: ``,
     pictures: []
   },
-  type: Types[0],
+  type: TYPES[0],
   options: [],
   startTime: moment(),
   finishTime: moment(),
@@ -104,6 +105,9 @@ export default class EventController {
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
+      if (this._mode === Mode.ADD) {
+        return;
+      }
       const newPoint = Point.clone(event);
       newPoint.favorite = !newPoint.favorite;
       this._onDataChange(this, event, newPoint, false);
@@ -117,8 +121,8 @@ export default class EventController {
     });
 
     this._eventForm.selectTypeHandler((evt) => {
-      this._eventForm._type = Types.find((x) => x.name === evt.target.value);
-      this._eventForm._name = Activities.get(this._eventForm._type.name);
+      this._eventForm._type = TYPES.find((x) => x.name === evt.target.value);
+      this._eventForm._name = ACTIVITIES.get(this._eventForm._type.name);
     });
 
     this._eventForm.setOnSelectChange((evt) => {

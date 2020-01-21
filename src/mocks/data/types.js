@@ -1,4 +1,4 @@
-export const Types = [
+export const TYPES = [
   {
     name: `taxi`,
     img: `taxi.png`,

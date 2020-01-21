@@ -18,7 +18,7 @@ export default class FilterController {
     });
     const oldComponent = this._filterComponent;
 
-    this._filterComponent = new Filters(filters);
+    this._filterComponent = new Filters(filters, this._model);
     this._filterComponent.setFilterChangeHandler(this._onFilterChange);
 
     if (oldComponent) {
@@ -31,6 +31,7 @@ export default class FilterController {
   _onFilterChange(filterType) {
     this._model.setFilter(filterType);
     this._activeFilterType = filterType;
+    this._onDataChange();
   }
 
   _onDataChange() {
