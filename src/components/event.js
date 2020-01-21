@@ -24,9 +24,9 @@ export default class Event extends Component {
 
     if (this._shownOptions > 3) {
       return ``;
-    } else {
-      this._shownOptions++;
     }
+
+    this._shownOptions++;
 
     return (`
          <li class="event__offer">

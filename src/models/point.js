@@ -1,5 +1,6 @@
-import {CURRENCY} from '../config';
 import moment from 'moment';
+
+import {CURRENCY} from '../config';
 import {calculateDuration, calculateDurationMs} from '../utils';
 import {ACTIVITIES} from '../mocks/data/activities';
 

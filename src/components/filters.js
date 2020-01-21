@@ -1,6 +1,7 @@
+import moment from 'moment';
+
 import Component from './component';
 import {FilterType} from '../config/const';
-import moment from 'moment';
 
 export default class Filters extends Component {
 

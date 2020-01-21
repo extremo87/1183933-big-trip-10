@@ -1,9 +1,10 @@
+import moment from 'moment';
+
 import Form from '../components/editEvent';
 import Event from '../components/event';
 import {render, RenderPosition, replaceWith, replace, remove} from '../utils';
 import {TYPES} from '../mocks/data/types';
 import {ACTIVITIES} from '../mocks/data/activities';
-import moment from 'moment';
 import {CURRENCY} from '../config';
 import Point from '../models/point';
 
@@ -104,6 +105,9 @@ export default class EventController {
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
+      if (this._mode === Mode.ADD) {
+        return;
+      }
       const newPoint = Point.clone(event);
       newPoint.favorite = !newPoint.favorite;
       this._onDataChange(this, event, newPoint, false);

@@ -1,18 +1,16 @@
-import SmartComponent from '../components/smartComponent';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 import {TYPES} from '../mocks/data/types';
 import {ACTIVITIES} from '../mocks/data/activities';
 import {calculateDurationFromMs} from '../utils';
+import SmartComponent from '../components/smartComponent';
 
-const getSumByType = (type, points) => {
-  let sum = 0;
-  const items = points.filter((item) => item.type.name === type);
-  for (const event of items) {
-    sum += event.price;
-  }
-  return sum;
-};
+
+const getSumByType = (type, points) => points
+  .reduce((acc, item) => item.type.name === type
+    ? acc + item.price
+    : acc, 0);
 
 const padding = {
   padding: {

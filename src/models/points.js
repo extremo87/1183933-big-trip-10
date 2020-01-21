@@ -1,5 +1,6 @@
-import {FilterType} from '../config/const';
 import moment from 'moment';
+
+import {FilterType} from '../config/const';
 
 export default class PointModel {
   constructor() {

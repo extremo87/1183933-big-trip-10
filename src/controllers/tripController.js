@@ -51,7 +51,10 @@ export default class TripController {
           controller.shake();
         });
       }
-    } else if (newObject === null) {
+      return;
+    }
+
+    if (newObject === null) {
       this._api.deletePoint(oldObject.id)
       .then(() => {
         this._model.removePoint(oldObject.id);
@@ -60,19 +63,21 @@ export default class TripController {
       .catch(() => {
         controller.shake();
       });
-    } else {
-      this._api.updatePoint(oldObject.id, newObject)
-        .then((pointModel) => {
-          const isSuccess = this._model.updatePoint(oldObject.id, pointModel);
-          if (isSuccess && needRerender) {
-            controller.render(pointModel, ControllerMode.DEFAULT);
-            this._updatePoints();
-          }
-        })
-        .catch(() => {
-          controller.shake();
-        });
+      return;
     }
+
+    this._api.updatePoint(oldObject.id, newObject)
+      .then((pointModel) => {
+        const isSuccess = this._model.updatePoint(oldObject.id, pointModel);
+        if (isSuccess && needRerender) {
+          controller.render(pointModel, ControllerMode.DEFAULT);
+          this._updatePoints();
+        }
+      })
+      .catch(() => {
+        controller.shake();
+      });
+
   }
 
   createPoint() {
