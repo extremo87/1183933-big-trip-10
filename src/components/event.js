@@ -47,7 +47,7 @@ export default class Event extends Component {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.img}" alt="Event type icon">
       </div>
-      <h3 class="event__title">${name} at ${cityName}</h3>
+      <h3 class="event__title">${name} ${cityName}</h3>
   
       <div class="event__schedule">
         <p class="event__time">

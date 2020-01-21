@@ -1,10 +1,9 @@
 import moment from 'moment';
 
 import {CURRENCY} from '../config';
-import {calculateDuration, calculateDurationMs} from '../utils';
-import {ACTIVITIES} from '../mocks/data/activities';
+import {calculateDuration, calculateDurationMs, setFirstLetterToUpperCase} from '../utils';
 
-const Types = new Map()
+const types = new Map()
 .set(`taxi`, `transfer`)
 .set(`bus`, `transfer`)
 .set(`train`, `transfer`)
@@ -16,14 +15,18 @@ const Types = new Map()
 .set(`sightseeing`, `activity`)
 .set(`restaurant`, `activity`);
 
+const prepositions = new Map()
+.set(`transfer`, `to`)
+.set(`activity`, `in`);
+
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
-    this.name = ACTIVITIES.get(data[`type`]);
+    this.name = `${setFirstLetterToUpperCase(data[`type`])} ${prepositions.get(types.get(data[`type`]))}`;
     this.type = {
       name: data[`type`],
       img: `${data[`type`]}.png`,
-      type: Types.get(data[`type`])
+      type: types.get(data[`type`])
     };
     this.city = data[`destination`];
     this.options = data[`offers`];
