@@ -170,19 +170,19 @@ export default class Form extends SmartComponent {
     const startTimeElement = this.getElement().querySelector(`.start-time`);
     const finishTimeElement = this.getElement().querySelector(`.finish-time`);
     this._flatpickrStart = flatpickr(startTimeElement, {
-      dateFormat: `d/m/Y H:i`,
-      defaultDate: this._startTime.valueOf(),
-      maxDate: this._finishTime.valueOf(),
-      enableTime: true,
-      time_24hr: true,
+      'dateFormat': `d/m/Y H:i`,
+      'defaultDate': this._startTime.valueOf(),
+      'maxDate': this._finishTime.valueOf(),
+      'enableTime': true,
+      'time_24hr': true
     });
 
     this._flatpickrFinish = flatpickr(finishTimeElement, {
-      dateFormat: `d/m/Y H:i`,
-      defaultDate: this._finishTime.valueOf(),
-      enableTime: true,
-      time_24hr: true,
-      minDate: this._startTime.valueOf(),
+      'dateFormat': `d/m/Y H:i`,
+      'defaultDate': this._finishTime.valueOf(),
+      'enableTime': true,
+      'time_24hr': true,
+      'minDate': this._startTime.valueOf(),
     });
   }
 
@@ -219,18 +219,18 @@ export default class Form extends SmartComponent {
     const formId = formData.get(`event-id`) === `undefined` ? Math.random().toString(36).substr(2, 9) : formData.get(`event-id`);
 
     return new Adapter({
-      id: formId,
-      name: ACTIVITIES.get(formType.name),
-      destination: formCity,
-      type: formType,
-      offers: formOptions,
-      date_from: formStartTime,
-      date_to: formFinishTime,
-      duration: formDuration,
-      durationInMs: formDurationMs,
-      base_price: formPrice,
-      currency: CURRENCY,
-      is_favorite: formData.has(`event-favorite`),
+      'id': formId,
+      'name': ACTIVITIES.get(formType.name),
+      'destination': formCity,
+      'type': formType,
+      'offers': formOptions,
+      'date_from': formStartTime,
+      'date_to': formFinishTime,
+      'duration': formDuration,
+      'durationInMs': formDurationMs,
+      'base_price': formPrice,
+      'currency': CURRENCY,
+      'is_favorite': formData.has(`event-favorite`),
     });
   }
 

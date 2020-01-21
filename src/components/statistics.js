@@ -134,15 +134,13 @@ const renderTransportChart = (element, points) => {
       }
     }
   });
-  dataTransport.sort((a, b) => b - a);
-  const labels = [];
-  const values = [];
-  for (const key in dataTransport) {
-    if (key) {
-      labels.push(`${emojis.get(key)} ${key}`);
-      values.push(dataTransport[key]);
-    }
-  }
+
+  const labels = Object.keys(dataTransport).sort((a, b) => {
+    return dataTransport[b] - dataTransport[a];
+  }).map((key) => `${emojis.get(key)} ${key}`);
+  const values = Object.values(dataTransport).sort((a, b) => {
+    return b - a;
+  });
 
   return new Chart(element, {
     plugins: [ChartDataLabels],
