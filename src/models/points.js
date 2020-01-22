@@ -84,4 +84,5 @@ export default class PointModel {
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
+
 }

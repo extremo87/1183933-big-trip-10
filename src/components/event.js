@@ -1,13 +1,14 @@
-import {CURRENCY_SIGN} from '../config';
+import {CURRENCY_SIGN, VISIBLE_OPTIONS_COUNT} from '../config';
 import Component from './component';
 
 export default class Event extends Component {
 
-  constructor(event) {
+  constructor(event, options) {
     super();
     this._event = event;
     this._showBtnHandler = null;
     this._shownOptions = null;
+    this._allOptions = options;
     this.recoveryListeners();
   }
 
@@ -22,11 +23,13 @@ export default class Event extends Component {
 
   renderOption(option) {
 
-    if (this._shownOptions > 3) {
+    if (this._shownOptions > VISIBLE_OPTIONS_COUNT) {
       return ``;
     }
 
     this._shownOptions++;
+
+    
 
     return (`
          <li class="event__offer">

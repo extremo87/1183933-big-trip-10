@@ -207,15 +207,6 @@ export default class Form extends SmartComponent {
     const formPrice = he.encode(formData.get(`event-price`));
     const formCity = this._cities.find((city) => city.name === formName);
     const formType = this._type.name;
-    const formOptions = [];
-    const currentOptions = this._options.find((item) => item.type === formType);
-
-    currentOptions.offers.map((option) => {
-      if (formData.has(`event-offer-${option.title}`)) {
-        formOptions.push(option);
-      }
-    });
-
     const formId = formData.get(`event-id`) === `undefined` ? Math.random().toString(36).substr(2, 9) : formData.get(`event-id`);
 
     return new Adapter({
@@ -223,7 +214,7 @@ export default class Form extends SmartComponent {
       'name': ACTIVITIES.get(formType.name),
       'destination': formCity,
       'type': formType,
-      'offers': formOptions,
+      'offers': this.offers,
       'date_from': formStartTime,
       'date_to': formFinishTime,
       'duration': formDuration,
@@ -243,8 +234,9 @@ export default class Form extends SmartComponent {
   renderOption(option) {
 
     const availableOptions = this.offers.map((item) => item.title);
-
     const isChecked = (availableOptions.includes(option.title)) ? `checked` : ``;
+    const currentEventOption = this.offers.find((item) => item.title === option.title);
+    const price = (currentEventOption) ? currentEventOption.price : option.price;
 
     return (`
         <div class="event__offer-selector">
@@ -252,7 +244,7 @@ export default class Form extends SmartComponent {
           <label class="event__offer-label" for="event-offer-${option.title}-1">
             <span class="event__offer-title">${option.title}</span>
             &plus;
-            ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${option.price}</span>
+            ${CURRENCY_SIGN}&nbsp;<span class="event__offer-price">${price}</span>
           </label>
         </div>
     `);

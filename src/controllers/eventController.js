@@ -89,7 +89,7 @@ export default class EventController {
     this._currentEvent = event;
     const oldEventForm = this._eventForm;
     const oldEventCard = this._eventCard;
-    this._eventCard = new Event(event);
+    this._eventCard = new Event(event, this._options);
     this._eventForm = new Form(event, this._cities, this._options);
 
     this._eventCard.setShowButtonHandler(() => {
@@ -144,13 +144,15 @@ export default class EventController {
     this._eventForm.setOfferHandler((evt) => {
       const offerTitle = evt.target.dataset.name;
       const availableTypeOffers = this._options.find((item) => item.type === this._eventForm._type.name).offers;
-      const currentOffer = availableTypeOffers.find((offer) => offer.title === offerTitle);
       const existOffer = this._eventForm.offers.find(((offer) => offer.title === offerTitle));
+
       if (existOffer) {
-        this._eventForm.offers = this._eventForm.offers.filter((item) => item.title !== currentOffer.title);
-      } else {
-        this._eventForm.offers.push(currentOffer);
+        this._eventForm.offers = this._eventForm.offers.filter((item) => item.title !== offerTitle);
+        return;
       }
+
+      const currentOffer = availableTypeOffers.find((offer) => offer.title === offerTitle);
+      this._eventForm.offers.push(currentOffer);
     });
 
     this._eventForm.setSubmitHandler(() => {
