@@ -2,13 +2,18 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import {TYPES} from '../mocks/data/types';
-import {calculateDurationFromMs, generatePlaceholder} from '../utils';
+import {calculateDurationFromMs, calculateDurationMs} from '../utils';
 import SmartComponent from '../components/smartComponent';
 
 
 const getSumByType = (type, points) => points
   .reduce((acc, item) => item.type.name === type
     ? acc + item.price
+    : acc, 0);
+
+const getTypeDuration = (type, points) => points
+  .reduce((acc, item) => item.type.name === type
+    ? acc + calculateDurationMs(item.startTime, item.finishTime)
     : acc, 0);
 
 const padding = {
@@ -172,14 +177,22 @@ const renderTransportChart = (element, points) => {
 };
 
 const renderTimeChart = (element, points) => {
-  points.sort((a, b) => b.durationInMs - a.durationInMs);
-  const labels = [];
-  const values = [];
 
+  const types = [];
   points.map((point) => {
-    labels.push(`${emojis.get(point.type.name)}${generatePlaceholder(point.type.name)} ${point.city.name}`);
-    values.push(point.durationInMs);
+    if (!types.includes(point.type.name)) {
+      types.push(point.type.name);
+    }
   });
+  const chartData = types.map((label) => {
+    return {
+      name: label,
+      durationInMs: getTypeDuration(label, points)
+    };
+  }).sort((a, b) => b.durationInMs - a.durationInMs);
+
+  const labels = chartData.map((item) => `${emojis.get(item.name)}${item.name} `);
+  const values = chartData.map((item) => item.durationInMs);
 
   return new Chart(element, {
     plugins: [ChartDataLabels],
@@ -244,7 +257,7 @@ export default class Statistics extends SmartComponent {
         </div>
         <div class="statistic__line">
         <div class="statistic">
-          <canvas class="statistic__time" width="550" height="400"></canvas>
+          <canvas class="statistic__time" width="550" height="220"></canvas>
         </div>
       </div>
       </section>`
