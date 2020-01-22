@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import {prepositions, types} from '../config/const';
+
 export const getRandomArrayItem = (array) => {
   const randomIndex = getRandomInt(0, array.length);
   return array[randomIndex];
@@ -170,6 +172,10 @@ export const calculateDurationFromMs = (mseconds) => {
 
 export const setFirstLetterToUpperCase = (string) => {
   return `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
+};
+
+export const generatePlaceholder = (type) => {
+  return `${setFirstLetterToUpperCase(type)} ${prepositions.get(types.get(type))}`;
 };
 
 

@@ -139,6 +139,9 @@ export default class TripController {
 
   renderEventsWithDays(points) {
     const daysEvents = generateDays(points);
+
+    console.log(daysEvents);
+
     const daysElements = [];
     const days = this._tripDays.getElement();
 

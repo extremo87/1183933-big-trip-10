@@ -1,28 +1,13 @@
 import moment from 'moment';
 
 import {CURRENCY} from '../config';
-import {calculateDuration, calculateDurationMs, setFirstLetterToUpperCase} from '../utils';
-
-const types = new Map()
-.set(`taxi`, `transfer`)
-.set(`bus`, `transfer`)
-.set(`train`, `transfer`)
-.set(`flight`, `transfer`)
-.set(`ship`, `transfer`)
-.set(`transport`, `transfer`)
-.set(`drive`, `transfer`)
-.set(`check-in`, `activity`)
-.set(`sightseeing`, `activity`)
-.set(`restaurant`, `activity`);
-
-const prepositions = new Map()
-.set(`transfer`, `to`)
-.set(`activity`, `in`);
+import {calculateDuration, calculateDurationMs, generatePlaceholder} from '../utils';
+import {types} from '../config/const';
 
 export default class Point {
   constructor(data) {
     this.id = data[`id`];
-    this.name = `${setFirstLetterToUpperCase(data[`type`])} ${prepositions.get(types.get(data[`type`]))}`;
+    this.name = generatePlaceholder(data[`type`]);
     this.type = {
       name: data[`type`],
       img: `${data[`type`]}.png`,

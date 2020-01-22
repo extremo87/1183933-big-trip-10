@@ -2,8 +2,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 import {TYPES} from '../mocks/data/types';
-import {ACTIVITIES} from '../mocks/data/activities';
-import {calculateDurationFromMs} from '../utils';
+import {calculateDurationFromMs, generatePlaceholder} from '../utils';
 import SmartComponent from '../components/smartComponent';
 
 
@@ -178,7 +177,7 @@ const renderTimeChart = (element, points) => {
   const values = [];
 
   points.map((point) => {
-    labels.push(`${ACTIVITIES.get(point.type.name)} ${point.city.name} ${emojis.get(point.type.name)} `);
+    labels.push(`${emojis.get(point.type.name)}${generatePlaceholder(point.type.name)} ${point.city.name}`);
     values.push(point.durationInMs);
   });
 

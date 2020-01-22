@@ -7,9 +7,8 @@ import 'flatpickr/dist/themes/light.css';
 
 import {TYPES} from '../mocks/data/types';
 import {CURRENCY_SIGN, CURRENCY} from '../config';
-import {ACTIVITIES} from '../mocks/data/activities';
 import SmartComponent from './smartComponent';
-import {calculateDuration, calculateDurationMs} from '../utils';
+import {calculateDuration, calculateDurationMs, generatePlaceholder} from '../utils';
 import Adapter from '../models/point.js';
 
 
@@ -211,7 +210,7 @@ export default class Form extends SmartComponent {
 
     return new Adapter({
       'id': formId,
-      'name': ACTIVITIES.get(formType.name),
+      'name': generatePlaceholder(formType),
       'destination': formCity,
       'type': formType,
       'offers': this.offers,

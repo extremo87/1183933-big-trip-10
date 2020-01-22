@@ -2,9 +2,8 @@ import moment from 'moment';
 
 import Form from '../components/editEvent';
 import Event from '../components/event';
-import {render, RenderPosition, replaceWith, replace, remove} from '../utils';
+import {render, RenderPosition, replaceWith, replace, remove, generatePlaceholder} from '../utils';
 import {TYPES} from '../mocks/data/types';
-import {ACTIVITIES} from '../mocks/data/activities';
 import {CURRENCY} from '../config';
 import Point from '../models/point';
 
@@ -16,8 +15,9 @@ export const Mode = {
   EDIT: `edit`,
 };
 
+
 export const EmptyPoint = {
-  name: ACTIVITIES.get(TYPES[0].name),
+  name: generatePlaceholder(TYPES[0].name),
   city: {
     name: ``,
     description: ``,
@@ -122,7 +122,7 @@ export default class EventController {
 
     this._eventForm.selectTypeHandler((evt) => {
       this._eventForm._type = TYPES.find((x) => x.name === evt.target.value);
-      this._eventForm._name = ACTIVITIES.get(this._eventForm._type.name);
+      this._eventForm._name = generatePlaceholder(this._eventForm._type.name);
     });
 
     this._eventForm.setOnSelectChange((evt) => {
