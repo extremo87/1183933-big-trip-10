@@ -29,7 +29,6 @@ export default class Event extends Component {
 
     this._shownOptions++;
 
-    
 
     return (`
          <li class="event__offer">

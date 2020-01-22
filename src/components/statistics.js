@@ -191,7 +191,7 @@ const renderTimeChart = (element, points) => {
     };
   }).sort((a, b) => b.durationInMs - a.durationInMs);
 
-  const labels = chartData.map((item) => `${emojis.get(item.name)}${item.name} `);
+  const labels = chartData.map((item) => `${emojis.get(item.name)} ${item.name} `);
   const values = chartData.map((item) => item.durationInMs);
 
   return new Chart(element, {
