@@ -81,10 +81,12 @@ export const generateDays = (points, firstDay) => {
   }).map((item) => item.startTime);
 
   const days = [];
+  const firstDayValue = 1;
 
   for (const dateTime of allPointTimes) {
+    const difference = Math.round(dateTime.diff(firstDay, `days`, true));
     days.push({
-      counter: (dateTime !== firstDay) ? dateTime.diff(firstDay, `days`) + 1 : 1,
+      counter: (dateTime === firstDay) ? firstDayValue : difference + firstDayValue,
       date: dateTime,
       points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
     });
