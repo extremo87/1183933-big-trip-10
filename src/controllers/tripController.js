@@ -138,7 +138,7 @@ export default class TripController {
   }
 
   renderEventsWithDays(points) {
-    const daysEvents = generateDays(points);
+    const daysEvents = generateDays(points, this._model.orderByDate()[0].startTime);
     const daysElements = [];
     const days = this._tripDays.getElement();
 

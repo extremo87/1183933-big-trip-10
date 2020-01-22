@@ -59,7 +59,7 @@ export const replaceWith = (component, newComponent) => {
   component.getElement().replaceWith(newComponent.getElement());
 };
 
-export const generateDays = (points) => {
+export const generateDays = (points, firstDay) => {
   points.sort((a, b) => {
     if (a.startTime > b.startTime) {
       return 1;
@@ -81,11 +81,10 @@ export const generateDays = (points) => {
   }).map((item) => item.startTime);
 
   const days = [];
-  const firstDay = allPointTimes[0];
 
   for (const dateTime of allPointTimes) {
     days.push({
-      counter: (dateTime !== firstDay) ? dateTime.diff(firstDay, `days`) : 1,
+      counter: (dateTime !== firstDay) ? dateTime.diff(firstDay, `days`) + 1 : 1,
       date: dateTime,
       points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
     });

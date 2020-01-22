@@ -85,4 +85,16 @@ export default class PointModel {
     handlers.forEach((handler) => handler());
   }
 
+  orderByDate() {
+    return this._points.sort((a, b) => {
+      if (a.startTime > b.startTime) {
+        return 1;
+      }
+      if (a.startTime < b.startTime) {
+        return -1;
+      }
+      return 0;
+    });
+  }
+
 }
