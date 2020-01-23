@@ -46,6 +46,8 @@ export default class EventController {
     this._rerenderEvents = rerenderEvents;
     this._cities = [];
     this._options = [];
+
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
   setDefaultView() {
@@ -69,6 +71,7 @@ export default class EventController {
   }
 
   replaceWithCard() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
     replaceWith(this._eventForm, this._eventCard);
   }
 
@@ -79,6 +82,10 @@ export default class EventController {
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
     if (isEscKey) {
+      if (this._mode === Mode.ADD) {
+        this.destroy();
+        return;
+      }
       this.replaceWithCard();
     }
   }
@@ -102,6 +109,7 @@ export default class EventController {
     this._eventForm.setCollapseHandler(() => {
       this._onViewChange();
       this.replaceWithCard();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
@@ -130,12 +138,10 @@ export default class EventController {
     });
 
     this._eventForm.setStartTimeHandler((evt) => {
-      console.log((new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format())));
       this._eventForm._startTime = new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format());
     });
 
     this._eventForm.setFinishTimeHandler((evt) => {
-      console.log((new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format())));
       this._eventForm._finishTime = new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format());
     });
 

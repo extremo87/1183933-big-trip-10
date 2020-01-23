@@ -376,4 +376,17 @@ export default class Form extends SmartComponent {
   getTemplate() {
     return this.renderForm();
   }
+
+  removeElement() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+    }
+    if (this._flatpickrFinish) {
+      this._flatpickrFinish.destroy();
+      this._flatpickrFinish = null;
+    }
+
+    super.removeElement();
+  }
 }
