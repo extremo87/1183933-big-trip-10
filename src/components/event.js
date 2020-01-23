@@ -53,9 +53,9 @@ export default class Event extends Component {
   
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">${startTime.format(`hh:mm`)}</time>
+          <time class="event__start-time" datetime="2019-03-18T10:30">${startTime.format(`HH:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="2019-03-18T11:00">${finishTime.format(`hh:mm`)}</time>
+          <time class="event__end-time" datetime="2019-03-18T11:00">${finishTime.format(`HH:mm`)}</time>
         </p>
         <p class="event__duration">${duration}</p>
       </div>
