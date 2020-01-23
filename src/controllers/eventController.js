@@ -25,8 +25,8 @@ export const EmptyPoint = {
   },
   type: TYPES[0],
   options: [],
-  startTime: moment(),
-  finishTime: moment(),
+  startTime: new Date(),
+  finishTime: new Date(),
   duration: null,
   durationInMs: null,
   price: 0,
@@ -130,11 +130,13 @@ export default class EventController {
     });
 
     this._eventForm.setStartTimeHandler((evt) => {
-      this._eventForm._startTime = moment(evt.target.value, `DD/MM/YYYY hh:mm`);
+      console.log((new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format())));
+      this._eventForm._startTime = new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format());
     });
 
     this._eventForm.setFinishTimeHandler((evt) => {
-      this._eventForm._finishTime = moment(evt.target.value, `DD/MM/YYYY hh:mm`);
+      console.log((new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format())));
+      this._eventForm._finishTime = new Date(moment(evt.target.value, `DD/MM/YY hh:mm`).format());
     });
 
     this._eventForm.setPriceHandler((evt) => {

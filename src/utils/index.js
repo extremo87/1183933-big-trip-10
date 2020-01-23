@@ -73,8 +73,8 @@ export const generateDays = (points, firstDay) => {
   const repeatingDays = [];
 
   const allPointTimes = points.filter((item) => {
-    if (!repeatingDays.includes(item.startTime.format(`L`))) {
-      repeatingDays.push(item.startTime.format(`L`));
+    if (!repeatingDays.includes(moment(item.startTime).format(`L`))) {
+      repeatingDays.push(moment(item.startTime).format(`L`));
       return true;
     }
     return false;
@@ -84,11 +84,11 @@ export const generateDays = (points, firstDay) => {
   const oneDay = 1;
 
   for (const dateTime of allPointTimes) {
-    const difference = Math.round(dateTime.startOf(`day`).diff(firstDay.startOf(`day`), `days`, true));
+    const difference = Math.round(moment(dateTime).startOf(`day`).diff(moment(firstDay).startOf(`day`), `days`, true));
     days.push({
       counter: (dateTime === firstDay) ? oneDay : difference + oneDay,
       date: dateTime,
-      points: points.filter((item) => item.startTime.isSame(dateTime, `day`))
+      points: points.filter((item) => moment(item.startTime).isSame(dateTime, `day`))
     });
   }
   return days;
@@ -109,7 +109,7 @@ export const replace = (newComponent, oldComponent) => {
 
 export const calculateDuration = (startTime, finishTime) => {
 
-  const diff = finishTime.diff(startTime);
+  const diff = moment(finishTime).diff(moment(startTime));
   const diffDuration = moment.duration(diff);
 
   let duration = ``;
@@ -130,7 +130,7 @@ export const calculateDuration = (startTime, finishTime) => {
 };
 
 export const calculateDurationMs = (startTime, finishTime) => {
-  const diff = finishTime.diff(startTime);
+  const diff = moment(finishTime).diff(moment(startTime));
   const diffDuration = moment.duration(diff);
   return diffDuration.asMilliseconds();
 };

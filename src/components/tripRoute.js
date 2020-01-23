@@ -1,4 +1,5 @@
 import Component from './component';
+import moment from 'moment';
 
 export default class TripRoute extends Component {
 
@@ -19,6 +20,9 @@ export default class TripRoute extends Component {
     const startPoint = this._points[0];
     const finalPoint = this._points[this._points.length - 1];
 
+    const startTime = moment(startPoint.startTime);
+    const finishTime = moment(finalPoint.startTime);
+
     const cities = new Set();
     this._points.map((point) => cities.add(point.city.name));
 
@@ -34,7 +38,7 @@ export default class TripRoute extends Component {
     }
     return (`<div class="trip-info__main">
         <h1 class="trip-info__title">${title}</h1>
-        <p class="trip-info__dates">${startPoint.startTime.format(`D MMM`)}&nbsp;&mdash;&nbsp; ${finalPoint.finishTime.format(`D MMM`)}</p>
+        <p class="trip-info__dates">${startTime.format(`D MMM`)}&nbsp;&mdash;&nbsp; ${finishTime.format(`D MMM`)}</p>
       </div>`);
   }
 }

@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import {CURRENCY} from '../config';
 import {calculateDuration, calculateDurationMs, generatePlaceholder} from '../utils';
 import {types} from '../config/const';
@@ -15,8 +13,8 @@ export default class Point {
     };
     this.city = data[`destination`];
     this.options = data[`offers`];
-    this.startTime = moment(data[`date_from`]);
-    this.finishTime = moment(data[`date_to`]);
+    this.startTime = new Date(data[`date_from`]);
+    this.finishTime = new Date(data[`date_to`]);
     this.duration = calculateDuration(this.startTime, this.finishTime);
     this.durationInMs = calculateDurationMs(this.startTime, this.finishTime);
     this.price = data[`base_price`];
@@ -29,8 +27,8 @@ export default class Point {
     return {
       'id': this.id,
       'type': type,
-      'date_from': this.startTime,
-      'date_to': this.finishTime,
+      'date_from': this.startTime.toISOString(),
+      'date_to': this.finishTime.toISOString(),
       'destination': this.city,
       'base_price': Number(this.price),
       'is_favorite': this.favorite,

@@ -45,6 +45,8 @@ export default class Form extends SmartComponent {
     this._priceHandler = null;
     this._offerHandler = null;
     this._deleteHandler = null;
+    this._startTimeHandler = null;
+    this._finishTimeHandler = null;
     this._applyFlatpickr();
 
     this.hasErrors = false;
@@ -98,6 +100,7 @@ export default class Form extends SmartComponent {
   }
 
   setStartTimeHandler(handler) {
+    this._startTimeHandler = handler;
     const element = this.getElement().querySelector(`.start-time`);
     element.addEventListener(`change`, (evt) => {
       handler(evt);
@@ -106,6 +109,7 @@ export default class Form extends SmartComponent {
   }
 
   setFinishTimeHandler(handler) {
+    this._finishTimeHandler = handler;
     const element = this.getElement().querySelector(`.finish-time`);
     element.addEventListener(`change`, (evt) => {
       handler(evt);
@@ -170,18 +174,18 @@ export default class Form extends SmartComponent {
     const finishTimeElement = this.getElement().querySelector(`.finish-time`);
     this._flatpickrStart = flatpickr(startTimeElement, {
       'dateFormat': `d/m/Y H:i`,
-      'defaultDate': this._startTime.valueOf(),
-      'maxDate': this._finishTime.valueOf(),
+      'defaultDate': this._startTime,
+      'maxDate': this._finishTime,
       'enableTime': true,
       'time_24hr': true
     });
 
     this._flatpickrFinish = flatpickr(finishTimeElement, {
       'dateFormat': `d/m/Y H:i`,
-      'defaultDate': this._finishTime.valueOf(),
+      'defaultDate': this._finishTime,
       'enableTime': true,
       'time_24hr': true,
-      'minDate': this._startTime.valueOf(),
+      'minDate': this._startTime
     });
   }
 
@@ -194,6 +198,8 @@ export default class Form extends SmartComponent {
     this.setPriceHandler(this._priceHandler);
     this.setOfferHandler(this._offerHandler);
     this.setDeleteButtonHandler(this._deleteHandler);
+    this.setStartTimeHandler(this._startTimeHandler);
+    this.setFinishTimeHandler(this._finishTimeHandler);
   }
 
   parseFormData(formData) {
@@ -311,12 +317,12 @@ export default class Form extends SmartComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time start-time" id="event-start-time-1" type="text" name="event-start-time" value="${this._startTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time start-time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._startTime).format(`DD/MM/YY hh:mm`)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time finish-time" id="event-end-time-1" type="text" name="event-end-time" value="${this._finishTime.format(`DD/MM/YY hh:mm`)}">
+            <input class="event__input  event__input--time finish-time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._finishTime).format(`DD/MM/YY hh:mm`)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">

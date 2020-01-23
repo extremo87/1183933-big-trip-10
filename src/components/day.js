@@ -1,4 +1,5 @@
 import Component from './component';
+import moment from 'moment';
 
 export default class Day extends Component {
 
@@ -20,7 +21,7 @@ export default class Day extends Component {
     return (`<li class="trip-days__item  day">
       <div class="day__info">
           <span class="day__counter">${this._day.counter}</span>
-          <time class="day__date" datetime="2019-03-18">${date.format(`MMM DD`)}</time>
+          <time class="day__date" datetime="2019-03-18">${moment(date).format(`MMM DD`)}</time>
       </div>
       <ul class="trip-events__list">
       </ul>
