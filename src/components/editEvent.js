@@ -301,11 +301,26 @@ export default class Form extends SmartComponent {
     return (`<img class="event__photo" src="${image.src}" alt="${image.description}">`);
   }
 
+  renderDestination(city) {
+    const cityDescription = city === undefined ? `` : city.description;
+    const cityImages = city === undefined ? [] : city.pictures;
+    return (!city.name) ? `` : (` 
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description"> ${cityDescription}</p>
+
+            <div class="event__photos-container">
+              <div class="event__photos-tape">
+              ${cityImages.map((image) => this.renderImage(image)).join(`\n`)}   
+              </div>
+            </div>
+          </section>
+          `);
+  }
+
   renderForm() {
     const {id} = this._event;
-    const cityName = this._city === undefined ? `` : this._city.name;
-    const cityDescription = this._city === undefined ? `` : this._city.description;
-    const cityImages = this._city === undefined ? [] : this._city.pictures;
+    const cityName = this._city === undefined ? `` : this._city.name; 
     const {deleteButtonText, saveButtonText} = this._externalData;
 
     return (`
@@ -382,16 +397,7 @@ export default class Form extends SmartComponent {
 
         <section class="event__details">
           ${(this._options.length !== 0) ? this.renderOptions(this._options) : ``} 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description"> ${cityDescription}</p>
-
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-              ${cityImages.map((image) => this.renderImage(image)).join(`\n`)}   
-              </div>
-            </div>
-          </section>
+          ${this.renderDestination(this._city)}
         </section>
       </form>
       </li>
