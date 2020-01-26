@@ -17,7 +17,7 @@ const ButtonText = {
   saveButtonText: `Save`,
 };
 
-const TIMEOUT = 2000;
+const TIMEOUT = 1000;
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class Form extends SmartComponent {
