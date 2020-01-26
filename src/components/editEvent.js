@@ -320,7 +320,7 @@ export default class Form extends SmartComponent {
 
   renderForm() {
     const {id} = this._event;
-    const cityName = this._city === undefined ? `` : this._city.name; 
+    const cityName = this._city === undefined ? `` : this._city.name;
     const {deleteButtonText, saveButtonText} = this._externalData;
 
     return (`
