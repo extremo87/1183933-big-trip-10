@@ -34,7 +34,7 @@ export default class Filters extends Component {
 
   reloadFilterState() {
     const elements = document.getElementsByClassName(`trip-filters__filter-input`);
-    for (let element of elements) {
+    for (const element of elements) {
       if (element) {
         element.disabled = false;
       }

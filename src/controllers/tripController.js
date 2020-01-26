@@ -1,8 +1,8 @@
 import Sorting from '../components/sorting';
 import Day from '../components/day';
 import TripDays from '../components/tripDays';
-import {render, RenderPosition, generateDays} from '../utils';
-import EventController, {Mode as ControllerMode, EmptyPoint} from './eventController';
+import {render, RenderPosition, generateDays, remove} from '../utils';
+import EventController, {Mode as ControllerMode, emptyPoint} from './eventController';
 
 
 export default class TripController {
@@ -15,6 +15,7 @@ export default class TripController {
     this._sort = new Sorting();
     this._tripDays = new TripDays();
     this._createForm = null;
+    this._createFormDayElement = null;
 
     this._points = [];
     this._renderedControllers = [];
@@ -34,8 +35,7 @@ export default class TripController {
   }
 
   _onDataChange(controller, oldObject, newObject, needRerender = true) {
-    if (oldObject === EmptyPoint) {
-      this._createForm = null;
+    if (oldObject === emptyPoint) {
       if (newObject === null) {
         controller.destroy();
         this._updatePoints();
@@ -80,16 +80,24 @@ export default class TripController {
 
   }
 
-  createPoint() {
-    if (!this._createForm) {
-      this._createForm = new Day();
-      render(this._tripDays.getElement(), this._createForm.getElement(), RenderPosition.AFTERBEGIN);
+  destroyCreatingForm() {
+    if (this._createForm) {
+      this._createForm.destroy();
+      this._createForm = null;
+      remove(this._createFormDayElement);
     }
-    const createForm = new EventController(this._createForm, this._onDataChange, this._onViewChange, this.rerenderEvents);
-    createForm.setCities(this._cities);
-    createForm.setOptions(this._options);
-    createForm.render(EmptyPoint, ControllerMode.ADD);
-    this._renderedControllers = [].concat(createForm, this._renderedControllers);
+    this._renderedControllers = this._renderedControllers.filter((controller) => controller.getMode() !== ControllerMode.ADD);
+  }
+
+  createPoint() {
+    this.destroyCreatingForm();
+    this._createFormDayElement = new Day();
+    render(this._tripDays.getElement(), this._createFormDayElement.getElement(), RenderPosition.AFTERBEGIN);
+    this._createForm = new EventController(this._createFormDayElement, this._onDataChange, this._onViewChange, this.rerenderEvents);
+    this._createForm.setCities(this._cities);
+    this._createForm.setOptions(this._options);
+    this._createForm.render(emptyPoint, ControllerMode.ADD);
+    this._renderedControllers = [].concat(this._createForm, this._renderedControllers);
   }
 
   rerenderEvents() {

@@ -16,7 +16,7 @@ export const Mode = {
 };
 
 
-export const EmptyPoint = {
+export const emptyPoint = {
   name: generatePlaceholder(TYPES[0].name),
   city: {
     name: ``,
@@ -53,11 +53,16 @@ export default class EventController {
   setDefaultView() {
     if (this._mode === Mode.EDIT) {
       this.replaceWithCard();
+      this._eventForm.clearHandlers();
       this._mode = Mode.DEFAULT;
     }
     if (this._mode === Mode.ADD) {
       this.destroy();
     }
+  }
+
+  getMode() {
+    return this._mode;
   }
 
   destroy() {
@@ -91,7 +96,6 @@ export default class EventController {
   }
 
   render(event, mode) {
-
     this._mode = mode;
     this._currentEvent = event;
     const oldEventForm = this._eventForm;
@@ -101,6 +105,8 @@ export default class EventController {
 
     this._eventCard.setShowButtonHandler(() => {
       this._onViewChange();
+      this._eventForm.setFormToInitialState();
+      this._eventForm.rerender();
       this.replaceWithForm();
       this._mode = Mode.EDIT;
       document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -110,6 +116,7 @@ export default class EventController {
       this._onViewChange();
       this.replaceWithCard();
       document.removeEventListener(`keydown`, this._onEscKeyDown);
+      this._eventForm.clearHandlers();
     });
 
     this._eventForm.setFavouriteButtonHandler(() => {
@@ -117,7 +124,8 @@ export default class EventController {
         return;
       }
       const newPoint = Point.clone(event);
-      newPoint.favorite = !newPoint.favorite;
+      newPoint.favorite = !this._eventForm.favorite;
+      this._eventForm.favorite = newPoint.favorite;
       this._onDataChange(this, event, newPoint, false);
     });
 
@@ -131,6 +139,7 @@ export default class EventController {
     this._eventForm.selectTypeHandler((evt) => {
       this._eventForm._type = TYPES.find((x) => x.name === evt.target.value);
       this._eventForm._name = generatePlaceholder(this._eventForm._type.name);
+      this._eventForm.offers = [];
     });
 
     this._eventForm.setOnSelectChange((evt) => {
@@ -187,6 +196,7 @@ export default class EventController {
           remove(oldEventForm);
         }
         document.addEventListener(`keydown`, this._onEscKeyDown);
+        this._eventForm.addDateListeners();
         this._onViewChange();
         render(this._container.getEventsContainer(), this._eventForm.getElement(), RenderPosition.AFTERBEGIN);
         break;

@@ -12,7 +12,7 @@ import {calculateDuration, calculateDurationMs, generatePlaceholder} from '../ut
 import Adapter from '../models/point.js';
 
 
-const DefaultData = {
+const ButtonText = {
   deleteButtonText: `Delete`,
   saveButtonText: `Save`,
 };
@@ -21,21 +21,22 @@ const TIMEOUT = 2000;
 
 export default class Form extends SmartComponent {
 
-  constructor(event, cities, options) {
+  constructor(event, cities, allOptions) {
     super();
     this._event = event;
     this._name = event.name;
     this._city = event.city;
     this._type = event.type;
+    this.offers = event.options;
+    this.price = this._event.price;
+    this.favorite = event.favorite;
     this._startTime = event.startTime;
     this._finishTime = event.finishTime;
     this._flatpickrStart = null;
     this._flatpickrFinish = null;
-    this._externalData = DefaultData;
+    this._externalData = ButtonText;
     this._cities = cities;
-    this._options = options;
-    this.price = this._event.price;
-    this.offers = event.options;
+    this._options = allOptions;
 
     this._selectTypeHandler = null;
     this._collapseHandler = null;
@@ -47,10 +48,19 @@ export default class Form extends SmartComponent {
     this._deleteHandler = null;
     this._startTimeHandler = null;
     this._finishTimeHandler = null;
-    this._applyFlatpickr();
 
     this.hasErrors = false;
     this.isBlocked = false;
+  }
+
+  setFormToInitialState() {
+    this._name = this._event.name;
+    this._city = this._event.city;
+    this._type = this._event.type;
+    this._startTime = this._event.startTime;
+    this._finishTime = this._event.finishTime;
+    this.price = this._event.price;
+    this.offers = this._event.options;
   }
 
   rerender() {
@@ -86,12 +96,19 @@ export default class Form extends SmartComponent {
 
   setCollapseHandler(handler) {
     this._collapseHandler = handler;
-    this.setClickHandler(`.event__rollup-btn`, handler);
+    this.setClickHandler(`.event__rollup-btn`, (evt) => {
+      this.setFormToInitialState();
+      handler(evt);
+    });
   }
 
   setFavouriteButtonHandler(handler) {
     this._favouriteHandler = handler;
-    this.setClickHandler(`.event__favorite-checkbox`, debounce(handler, TIMEOUT));
+    const newHandler = () => {
+      handler();
+      this.rerender();
+    };
+    this.setClickHandler(`.event__favorite-checkbox`, debounce(newHandler, TIMEOUT));
   }
 
   setDeleteButtonHandler(handler) {
@@ -150,7 +167,6 @@ export default class Form extends SmartComponent {
     }
   }
 
-
   setOnSelectChange(handler) {
     this._selectCityHandler = handler;
     const select = this.getElement().querySelector(`.event__input--destination`);
@@ -160,7 +176,11 @@ export default class Form extends SmartComponent {
     });
   }
 
-  _applyFlatpickr() {
+  addDateListeners() {
+    return this._applyFlatpickr();
+  }
+
+  clearHandlers() {
     if (this._flatpickrStart) {
       this._flatpickrStart.destroy();
       this._flatpickrStart = null;
@@ -169,10 +189,14 @@ export default class Form extends SmartComponent {
       this._flatpickrFinish.destroy();
       this._flatpickrFinish = null;
     }
+  }
 
+  _applyFlatpickr() {
+    this.clearHandlers();
     const startTimeElement = this.getElement().querySelector(`.start-time`);
     const finishTimeElement = this.getElement().querySelector(`.finish-time`);
     this._flatpickrStart = flatpickr(startTimeElement, {
+      'capture': true,
       'dateFormat': `d/m/Y H:i`,
       'defaultDate': this._startTime,
       'maxDate': this._finishTime,
@@ -181,6 +205,7 @@ export default class Form extends SmartComponent {
     });
 
     this._flatpickrFinish = flatpickr(finishTimeElement, {
+      'capture': true,
       'dateFormat': `d/m/Y H:i`,
       'defaultDate': this._finishTime,
       'enableTime': true,
@@ -226,7 +251,7 @@ export default class Form extends SmartComponent {
       'durationInMs': formDurationMs,
       'base_price': formPrice,
       'currency': CURRENCY,
-      'is_favorite': formData.has(`event-favorite`),
+      'is_favorite': this.favorite,
     });
   }
 
@@ -271,7 +296,7 @@ export default class Form extends SmartComponent {
   }
 
   renderForm() {
-    const {favorite, id} = this._event;
+    const {id} = this._event;
     const cityName = this._city === undefined ? `` : this._city.name;
     const cityDescription = this._city === undefined ? `` : this._city.description;
     const cityImages = this._city === undefined ? [] : this._city.pictures;
@@ -336,7 +361,7 @@ export default class Form extends SmartComponent {
           <button class="event__save-btn  btn  btn--blue" type="submit" ${this.isBlocked ? `disabled` : ``}>${saveButtonText}</button>
           <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
-          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${ favorite ? `checked` : ``}>
+          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${ this.favorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -368,7 +393,7 @@ export default class Form extends SmartComponent {
   }
 
   setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+    this._externalData = Object.assign({}, ButtonText, data);
     this.rerender();
   }
 
@@ -378,15 +403,7 @@ export default class Form extends SmartComponent {
   }
 
   removeElement() {
-    if (this._flatpickrStart) {
-      this._flatpickrStart.destroy();
-      this._flatpickrStart = null;
-    }
-    if (this._flatpickrFinish) {
-      this._flatpickrFinish.destroy();
-      this._flatpickrFinish = null;
-    }
-
+    this.clearHandlers();
     super.removeElement();
   }
 }
