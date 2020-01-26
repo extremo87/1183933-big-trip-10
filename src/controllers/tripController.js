@@ -34,6 +34,14 @@ export default class TripController {
     this._options = [];
   }
 
+  setCities(cities) {
+    this._cities = cities;
+  }
+
+  setOptions(options) {
+    this._options = options;
+  }
+
   _onDataChange(controller, oldObject, newObject, needRerender = true) {
     if (oldObject === emptyPoint) {
       if (newObject === null) {
@@ -78,52 +86,6 @@ export default class TripController {
         controller.shake();
       });
 
-  }
-
-  destroyCreatingForm() {
-    if (this._createForm) {
-      this._createForm.destroy();
-      this._createForm = null;
-      remove(this._createFormDayElement);
-    }
-    this._renderedControllers = this._renderedControllers.filter((controller) => controller.getMode() !== ControllerMode.ADD);
-  }
-
-  createPoint() {
-    this.destroyCreatingForm();
-    this._createFormDayElement = new Day();
-    render(this._tripDays.getElement(), this._createFormDayElement.getElement(), RenderPosition.AFTERBEGIN);
-    this._createForm = new EventController(this._createFormDayElement, this._onDataChange, this._onViewChange, this.rerenderEvents);
-    this._createForm.setCities(this._cities);
-    this._createForm.setOptions(this._options);
-    this._createForm.render(emptyPoint, ControllerMode.ADD);
-    this._renderedControllers = [].concat(this._createForm, this._renderedControllers);
-  }
-
-  rerenderEvents() {
-    this._updatePoints();
-  }
-
-  _onViewChange() {
-    this._renderedControllers.forEach((controller) => controller.setDefaultView());
-  }
-
-  _sortHandler(sortType) {
-    this._currentSortType = sortType;
-    const sortTypes = this._sort.sortTypes;
-    const points = this._model.getPoints();
-    this._tripDays.clearElement();
-    switch (sortType) {
-      case sortTypes().DEFAULT:
-        this.renderEventsWithDays(points);
-        break;
-      case sortTypes().PRICE:
-        this.renderEventsWithoutDays(points.sort((a, b) => b.price - a.price));
-        break;
-      case sortTypes().DATE:
-        this.renderEventsWithoutDays(points.sort((a, b) => b.durationInMs - a.durationInMs));
-        break;
-    }
   }
 
   renderLayout() {
@@ -178,6 +140,52 @@ export default class TripController {
     this._renderedControllers = [];
   }
 
+  destroyCreatingForm() {
+    if (this._createForm) {
+      this._createForm.destroy();
+      this._createForm = null;
+      remove(this._createFormDayElement);
+    }
+    this._renderedControllers = this._renderedControllers.filter((controller) => controller.getMode() !== ControllerMode.ADD);
+  }
+
+  createPoint() {
+    this.destroyCreatingForm();
+    this._createFormDayElement = new Day();
+    render(this._tripDays.getElement(), this._createFormDayElement.getElement(), RenderPosition.AFTERBEGIN);
+    this._createForm = new EventController(this._createFormDayElement, this._onDataChange, this._onViewChange, this.rerenderEvents);
+    this._createForm.setCities(this._cities);
+    this._createForm.setOptions(this._options);
+    this._createForm.render(emptyPoint, ControllerMode.ADD);
+    this._renderedControllers = [].concat(this._createForm, this._renderedControllers);
+  }
+
+  rerenderEvents() {
+    this._updatePoints();
+  }
+
+  _onViewChange() {
+    this._renderedControllers.forEach((controller) => controller.setDefaultView());
+  }
+
+  _sortHandler(sortType) {
+    this._currentSortType = sortType;
+    const sortTypes = this._sort.sortTypes;
+    const points = this._model.getPoints();
+    this._tripDays.clearElement();
+    switch (sortType) {
+      case sortTypes().DEFAULT:
+        this.renderEventsWithDays(points);
+        break;
+      case sortTypes().PRICE:
+        this.renderEventsWithoutDays(points.sort((a, b) => b.price - a.price));
+        break;
+      case sortTypes().DATE:
+        this.renderEventsWithoutDays(points.sort((a, b) => b.durationInMs - a.durationInMs));
+        break;
+    }
+  }
+
   _onFilterChange() {
     this._updatePoints();
   }
@@ -188,14 +196,6 @@ export default class TripController {
 
   show() {
     this._container.show();
-  }
-
-  setCities(cities) {
-    this._cities = cities;
-  }
-
-  setOptions(options) {
-    this._options = options;
   }
 
 }

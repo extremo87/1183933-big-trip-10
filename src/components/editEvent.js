@@ -18,6 +18,7 @@ const ButtonText = {
 };
 
 const TIMEOUT = 2000;
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class Form extends SmartComponent {
 
@@ -53,6 +54,17 @@ export default class Form extends SmartComponent {
     this.isBlocked = false;
   }
 
+  setData(data) {
+    this._externalData = Object.assign({}, ButtonText, data);
+    this.rerender();
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`.event--edit`);
+    const formData = new FormData(form);
+    return this.parseFormData(formData);
+  }
+
   setFormToInitialState() {
     this._name = this._event.name;
     this._city = this._event.city;
@@ -61,20 +73,6 @@ export default class Form extends SmartComponent {
     this._finishTime = this._event.finishTime;
     this.price = this._event.price;
     this.offers = this._event.options;
-  }
-
-  rerender() {
-    super.rerender();
-    this._applyFlatpickr();
-  }
-
-  renderTypeItem(type) {
-    return (`
-        <div class="event__type-item">
-            <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.name}" ${ (this._type.name === type.name) ? `checked` : ``}>
-            <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${type.name}</label>
-        </div>
-    `);
   }
 
   setError(value) {
@@ -176,6 +174,20 @@ export default class Form extends SmartComponent {
     });
   }
 
+  rerender() {
+    super.rerender();
+    this._applyFlatpickr();
+  }
+
+  renderTypeItem(type) {
+    return (`
+        <div class="event__type-item">
+            <input id="event-type-${type.name}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.name}" ${ (this._type.name === type.name) ? `checked` : ``}>
+            <label class="event__type-label  event__type-label--${type.name}" for="event-type-${type.name}-1">${type.name}</label>
+        </div>
+    `);
+  }
+
   addDateListeners() {
     return this._applyFlatpickr();
   }
@@ -253,12 +265,6 @@ export default class Form extends SmartComponent {
       'currency': CURRENCY,
       'is_favorite': this.favorite,
     });
-  }
-
-  getData() {
-    const form = this.getElement().querySelector(`.event--edit`);
-    const formData = new FormData(form);
-    return this.parseFormData(formData);
   }
 
   renderOption(option) {
@@ -392,11 +398,19 @@ export default class Form extends SmartComponent {
     `);
   }
 
-  setData(data) {
-    this._externalData = Object.assign({}, ButtonText, data);
-    this.rerender();
-  }
 
+  shake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this.setError(true);
+    setTimeout(() => {
+      this.getElement().style.animation = ``;
+      this.unlock();
+      this.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
 
   getTemplate() {
     return this.renderForm();

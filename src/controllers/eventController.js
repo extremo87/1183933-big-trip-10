@@ -7,14 +7,11 @@ import {TYPES} from '../mocks/data/types';
 import {CURRENCY} from '../config';
 import Point from '../models/point';
 
-const SHAKE_ANIMATION_TIMEOUT = 600;
-
 export const Mode = {
   ADD: `add`,
   DEFAULT: `default`,
   EDIT: `edit`,
 };
-
 
 export const emptyPoint = {
   name: generatePlaceholder(TYPES[0].name),
@@ -50,6 +47,18 @@ export default class EventController {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
+  setCities(cities) {
+    this._cities = cities;
+  }
+
+  setOptions(options) {
+    this._options = options;
+  }
+
+  getMode() {
+    return this._mode;
+  }
+
   setDefaultView() {
     if (this._mode === Mode.EDIT) {
       this.replaceWithCard();
@@ -58,40 +67,6 @@ export default class EventController {
     }
     if (this._mode === Mode.ADD) {
       this.destroy();
-    }
-  }
-
-  getMode() {
-    return this._mode;
-  }
-
-  destroy() {
-    remove(this._eventForm);
-    remove(this._eventCard);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-  }
-
-  _commitChanges() {
-    this._onDataChange(this, this._currentEvent, this._eventForm.getData());
-  }
-
-  replaceWithCard() {
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-    replaceWith(this._eventForm, this._eventCard);
-  }
-
-  replaceWithForm() {
-    replaceWith(this._eventCard, this._eventForm);
-  }
-
-  _onEscKeyDown(evt) {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-    if (isEscKey) {
-      if (this._mode === Mode.ADD) {
-        this.destroy();
-        return;
-      }
-      this.replaceWithCard();
     }
   }
 
@@ -203,26 +178,37 @@ export default class EventController {
     }
   }
 
-  setCities(cities) {
-    this._cities = cities;
+  destroy() {
+    remove(this._eventForm);
+    remove(this._eventCard);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  setOptions(options) {
-    this._options = options;
+  _commitChanges() {
+    this._onDataChange(this, this._currentEvent, this._eventForm.getData());
+  }
+
+  replaceWithCard() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    replaceWith(this._eventForm, this._eventCard);
+  }
+
+  replaceWithForm() {
+    replaceWith(this._eventCard, this._eventForm);
+  }
+
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      if (this._mode === Mode.ADD) {
+        this.destroy();
+        return;
+      }
+      this.replaceWithCard();
+    }
   }
 
   shake() {
-    this._eventForm.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._eventCard.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._eventForm.setError(true);
-    setTimeout(() => {
-      this._eventForm.getElement().style.animation = ``;
-      this._eventCard.getElement().style.animation = ``;
-      this._eventForm.unlock();
-      this._eventForm.setData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`
-      });
-    }, SHAKE_ANIMATION_TIMEOUT);
+    this._eventForm.shake();
   }
 }
