@@ -42,6 +42,90 @@ export default class TripController {
     this._options = options;
   }
 
+  renderLayout() {
+    this._points = this._model.getPoints();
+    render(this._container.getElement(), this._sort.getElement(), RenderPosition.BEFOREEND);
+    render(this._container.getElement(), this._tripDays.getElement(), RenderPosition.BEFOREEND);
+    this.renderEventsWithDays(this._points);
+  }
+
+  renderEventsWithoutDays(points) {
+    const day = new Day();
+    render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
+    this._renderedControllers = points.map((point) => {
+      const event = new EventController(day, this._onDataChange, this._onViewChange, this.rerenderEvents);
+      event.setCities(this._cities);
+      event.setOptions(this._options);
+      event.render(point, ControllerMode.DEFAULT);
+      return event;
+    });
+  }
+
+  renderEventsWithDays(points) {
+    const daysEvents = generateDays(points, this._model.orderByDate()[0].startTime);
+    const daysElements = [];
+    const days = this._tripDays.getElement();
+
+    daysEvents.map((item) => {
+      const day = new Day(item);
+      daysElements.push(day);
+      render(days, day.getElement(), RenderPosition.BEFOREEND);
+    });
+    this._renderedControllers = [];
+    daysElements.map((element) => {
+      element.points.map((point) => {
+        const event = new EventController(element, this._onDataChange, this._onViewChange, this.rerenderEvents);
+        event.setCities(this._cities);
+        event.setOptions(this._options);
+        event.render(point, ControllerMode.DEFAULT);
+        this._renderedControllers.push(event);
+      });
+    });
+  }
+
+  destroyCreatingForm() {
+    if (this._createForm) {
+      this._createForm.destroy();
+      this._createForm = null;
+      remove(this._createFormDayElement);
+    }
+    this._renderedControllers = this._renderedControllers.filter((controller) => controller.getMode() !== ControllerMode.ADD);
+  }
+
+  createPoint() {
+    this.destroyCreatingForm();
+    this._createFormDayElement = new Day();
+    render(this._tripDays.getElement(), this._createFormDayElement.getElement(), RenderPosition.AFTERBEGIN);
+    this._createForm = new EventController(this._createFormDayElement, this._onDataChange, this._onViewChange, this.rerenderEvents);
+    this._createForm.setCities(this._cities);
+    this._createForm.setOptions(this._options);
+    this._createForm.render(emptyPoint, ControllerMode.ADD);
+    this._renderedControllers = [].concat(this._createForm, this._renderedControllers);
+  }
+
+  rerenderEvents() {
+    this._updatePoints();
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
+  show() {
+    this._container.show();
+  }
+
+  _updatePoints() {
+    this._tripDays.clearElement();
+    this._removePoints();
+    this._sortHandler(this._currentSortType);
+  }
+
+  _removePoints() {
+    this._renderedControllers.forEach((controller) => controller.destroy());
+    this._renderedControllers = [];
+  }
+
   _onDataChange(controller, oldObject, newObject, needRerender = true) {
     if (oldObject === emptyPoint) {
       if (newObject === null) {
@@ -88,82 +172,6 @@ export default class TripController {
 
   }
 
-  renderLayout() {
-    this._points = this._model.getPoints();
-    render(this._container.getElement(), this._sort.getElement(), RenderPosition.BEFOREEND);
-    render(this._container.getElement(), this._tripDays.getElement(), RenderPosition.BEFOREEND);
-    this.renderEventsWithDays(this._points);
-  }
-
-  renderEventsWithoutDays(points) {
-    const day = new Day();
-    render(this._tripDays.getElement(), day.getElement(), RenderPosition.BEFOREEND);
-    this._renderedControllers = points.map((point) => {
-      const event = new EventController(day, this._onDataChange, this._onViewChange, this.rerenderEvents);
-      event.setCities(this._cities);
-      event.setOptions(this._options);
-      event.render(point, ControllerMode.DEFAULT);
-      return event;
-    });
-  }
-
-  renderEventsWithDays(points) {
-    const daysEvents = generateDays(points, this._model.orderByDate()[0].startTime);
-    const daysElements = [];
-    const days = this._tripDays.getElement();
-
-    daysEvents.map((item) => {
-      const day = new Day(item);
-      daysElements.push(day);
-      render(days, day.getElement(), RenderPosition.BEFOREEND);
-    });
-    this._renderedControllers = [];
-    daysElements.map((element) => {
-      element.points.map((point) => {
-        const event = new EventController(element, this._onDataChange, this._onViewChange, this.rerenderEvents);
-        event.setCities(this._cities);
-        event.setOptions(this._options);
-        event.render(point, ControllerMode.DEFAULT);
-        this._renderedControllers.push(event);
-      });
-    });
-  }
-
-  _updatePoints() {
-    this._tripDays.clearElement();
-    this._removePoints();
-    this._sortHandler(this._currentSortType);
-  }
-
-  _removePoints() {
-    this._renderedControllers.forEach((controller) => controller.destroy());
-    this._renderedControllers = [];
-  }
-
-  destroyCreatingForm() {
-    if (this._createForm) {
-      this._createForm.destroy();
-      this._createForm = null;
-      remove(this._createFormDayElement);
-    }
-    this._renderedControllers = this._renderedControllers.filter((controller) => controller.getMode() !== ControllerMode.ADD);
-  }
-
-  createPoint() {
-    this.destroyCreatingForm();
-    this._createFormDayElement = new Day();
-    render(this._tripDays.getElement(), this._createFormDayElement.getElement(), RenderPosition.AFTERBEGIN);
-    this._createForm = new EventController(this._createFormDayElement, this._onDataChange, this._onViewChange, this.rerenderEvents);
-    this._createForm.setCities(this._cities);
-    this._createForm.setOptions(this._options);
-    this._createForm.render(emptyPoint, ControllerMode.ADD);
-    this._renderedControllers = [].concat(this._createForm, this._renderedControllers);
-  }
-
-  rerenderEvents() {
-    this._updatePoints();
-  }
-
   _onViewChange() {
     this._renderedControllers.forEach((controller) => controller.setDefaultView());
   }
@@ -188,14 +196,6 @@ export default class TripController {
 
   _onFilterChange() {
     this._updatePoints();
-  }
-
-  hide() {
-    this._container.hide();
-  }
-
-  show() {
-    this._container.show();
   }
 
 }
